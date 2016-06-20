@@ -1,11 +1,11 @@
 "use strict"
 
-const klass = require("lib").class
-const Event = require("lib").Event
-const EventTarget = require("lib").EventTarget
-const Node = require("lib").Node
-
 describe("Event", () => {
+    const klass = require("lib").class
+    const Event = require("lib").Event
+    const EventTarget = require("lib").EventTarget
+    const Node = require("lib").Node
+
     it("Event instantiation", () => {
         const event = new Event("test")
 
@@ -26,6 +26,11 @@ describe("Event", () => {
 })
 
 describe("EventTarget", () => {
+    const klass = require("lib").class
+    const Event = require("lib").Event
+    const EventTarget = require("lib").EventTarget
+    const Node = require("lib").Node
+
     it("EventTarget instantiation", () => {
         const target = new EventTarget
 
