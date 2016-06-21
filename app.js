@@ -49,6 +49,7 @@ Promise.all([
 
     const PATH_CLIENT = path.join(PATH_ROOT, "./www/client")
     const PATH_SERVER = path.join(PATH_ROOT, "./www/server")
+    const PATH_TEST = path.join(PATH_ROOT, "./specs/server")
 
     const mandatories = () => {
         const mandatories = []
@@ -106,6 +107,18 @@ Promise.all([
         })
     }
 
+    const start_tests = () => {
+        return new Promise((resolve, reject) => {
+            const cp = fork(path.join(PATH_TEST, "./index.js"), process.argv.slice(2), { execArgv: process.execArgv })
+            const pid = cp.pid
+            process.on("exit", e => exec(`kill -9 ${pid}`))
+        })
+    }
+
+    if ( process.argv.indexOf("--specs") != -1 )
+      mandatories()
+        .then(start_tests)
+    else
       mandatories()
         .then(start_clients)
         .then(start_servers)
