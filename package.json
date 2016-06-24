@@ -6,7 +6,9 @@
         "nodejs": "^6.2.1"
     }
 
-  , "dependencies": {}
+  , "dependencies": {
+      "jsdom": "*"
+    }
   , "devDependencies": {
         "browserify": "*"
       , "mocha": "*"

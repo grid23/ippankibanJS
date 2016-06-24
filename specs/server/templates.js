@@ -1,10 +1,15 @@
 "use strict"
+const chai = require("chai")
+
+const Model = require("../../lib/Model").Model
+const ZExpression = require("../../lib/ZParser").ZExpression
+const ZParser = require("../../lib/ZParser").ZParser
+const document = require("../../lib/ZParser").document
+const window = document.defaultView
+const Element = window.Element
+const Node = window.Node
 
 describe ("ZExpression & ZParser", ()=>{
-    const Model = require("lib").Model
-    const ZExpression = require("lib").ZExpression
-    const ZParser = require("lib").ZParser
-
     describe("new ZExpression", ()=>{
         it ("returns a valid zExpression object", ()=>{
             let e = new ZExpression

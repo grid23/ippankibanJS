@@ -8,7 +8,10 @@ module.exports = {
   , EventTarget: require("./lib/EventTarget.js").EventTarget
   , native: require("./lib/native.js").native
   , Model: require("./lib/Model").Model
-  , Node: require("./lib/Node.js").Node
+  , Node: require("./lib/Node").Node
+  , Route: require("./lib/Route").Route
+  , RouteDispatcher: require("./lib/RouteDispatcher").RouteDispatcher
+  , Router: require("./lib/Router").Router
   , Serializer: require("./lib/Serializer.js").Serializer
   , singleton: require("./lib/class").singleton
   , type: require("./lib/type.js").type
