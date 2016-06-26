@@ -3,6 +3,7 @@
 module.exports = {
     class: require("./lib/class.js").class
   , errors: require("./lib/class.js")
+  , domready: require("./lib/domready")
   , Event: require("./lib/Event.js").Event
   , EventDispatcher: require("./lib/EventDispatcher.js").EventDispatcher
   , EventTarget: require("./lib/EventTarget.js").EventTarget

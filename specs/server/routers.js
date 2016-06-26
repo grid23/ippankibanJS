@@ -1,10 +1,11 @@
 "use strict"
 
 describe("Router", () => {
-    const EventTarget = require("lib").EventTarget
-    const Route = require("lib").Route
-    const RouteDispatcher = require("lib").RouteDispatcher
-    const Router = require("lib").Router
+    const chai = require("chai")
+    const EventTarget = require("../../lib/EventTarget").EventTarget
+    const Route = require("../../lib/Route").Route
+    const RouteDispatcher = require("../../lib/RouteDispatcher").RouteDispatcher
+    const Router = require("../../lib/Router").Router
 
     it("new Router()", () => {
         const router = new Router

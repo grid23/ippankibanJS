@@ -4,11 +4,11 @@ const fs = require("fs")
 const path = require("path")
 
 const PATH_ROOT = path.resolve(process.cwd(), __dirname)
-const PATH_FILE = path.join(PATH_ROOT, "../../../node_modules/chai/chai.js")
+const PATH_FILE = path.join(PATH_ROOT, "../../../../node_modules/mocha/mocha.css")
 
-module.exports.path = "^/js/chai$"
+module.exports.path = "^/css/mocha$"
 module.exports.handler = (request, response) => {
     response.statusCode = 200
-    response.setHeader("Content-Type", "application/JavaScript")
+    response.setHeader("Content-Type", "text/CSS")
     fs.createReadStream(PATH_FILE).pipe(response)
 }

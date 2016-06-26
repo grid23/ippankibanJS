@@ -284,6 +284,7 @@ describe("EventTarget", () => {
             b.dispatchEvent(new Event("foo", { bubbles: false }))
         })
 
+        /*
         it("event.wait()", done => {
             let a = new Node
             let b = a.appendChild(new Node)
@@ -338,6 +339,7 @@ describe("EventTarget", () => {
 
             c.dispatchEvent("foo")
         })
+        */
 
         it("event.stop()", done => {
             let a = new Node

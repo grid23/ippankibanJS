@@ -19,10 +19,10 @@ fs.readdir(PATH, (err, files) => {
     .filter( file => path.extname(file) == ".js" && file !== "index.js"  )
     .forEach( file => mocha.addFile(path.join(PATH, file)) )
 
-    const start = process.memoryUsage().heapTotal / 1024
+    const start = process.memoryUsage().heapTotal / 1024 / 1024
     mocha.run(failures => {
         process.on("exit", e => {
-            const end = process.memoryUsage().heapTotal / 1024
+            const end = process.memoryUsage().heapTotal / 1024 / 1024
             console.log("memory usage", start, "=>", end, "(mb)")
         })
 

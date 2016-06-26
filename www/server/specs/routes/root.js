@@ -5,7 +5,7 @@ const path = require("path")
 
 const IGNORE = [".DS_STORE"]
 const PATH_ROOT = path.resolve(process.cwd(), __dirname)
-const PATH_SPECS = path.join(PATH_ROOT, "../../../specs/browser")
+const PATH_SPECS = path.join(PATH_ROOT, "../../../../specs/browser")
 
 const HTML = `<!doctype html>
 <html dir=ltr>

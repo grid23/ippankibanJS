@@ -6,7 +6,7 @@ const path = require("path")
 const url = require("url")
 
 const PATH_ROOT = path.resolve(process.cwd(), __dirname)
-const PATH_ROUTE = path.join(PATH_ROOT, "./routes")
+const PATH_ROUTE = path.join(PATH_ROOT, "./specs/routes")
 const IGNORE = [".DS_STORE"]
 
 new Promise((resolve, reject) => {
@@ -46,6 +46,6 @@ new Promise((resolve, reject) => {
     })
 
     server.listen(1337)
-    console.log(`\nserver listening on port 1337`)
+    console.log(`\nspecs server listening on port 1337`)
 })
 .catch(err => console.log(err))

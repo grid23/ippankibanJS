@@ -2,16 +2,13 @@
 
 const fs = require("fs")
 const path = require("path")
-const url = require("url")
 
 const PATH_ROOT = path.resolve(process.cwd(), __dirname)
-const PATH_FILES = path.join(PATH_ROOT, "../../../specs/browser")
+const PATH_FILE = path.join(PATH_ROOT, "../../../../node_modules/mocha/mocha.js")
 
-module.exports.path = "^/specs/(.*)$"
+module.exports.path = "^/js/mocha$"
 module.exports.handler = (request, response) => {
-    let file = path.join(PATH_FILES, url.parse(request.url).pathname.replace("/specs", ""))
-
     response.statusCode = 200
     response.setHeader("Content-Type", "application/JavaScript")
-    fs.createReadStream(file).pipe(response)
+    fs.createReadStream(PATH_FILE).pipe(response)
 }
