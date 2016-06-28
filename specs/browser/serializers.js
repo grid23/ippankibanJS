@@ -81,6 +81,10 @@ describe("Serializer", () => {
             chai.expect(q).to.equal("")
         })
 
+        it("serializer.stringify", () => {
+            throw new Error("todo")
+        })
+
         it ("can objectify a serialized string", () => {
             let s = new Serializer
             let o = s.objectify("foo=bar&bar=foo")
