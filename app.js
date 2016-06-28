@@ -73,7 +73,7 @@ Promise.all([
         return new Promise((resolve, reject) => {
             fs.readdir(PATH_CLIENT, (error, _files) => {
                 if (error)
-                  return onfatalerror(error)
+                  return resolve()
 
                 const files = _files.filter(file => IGNORE.indexOf(file) == -1 && fs.statSync(path.join(PATH_CLIENT, file)).isFile() )
 

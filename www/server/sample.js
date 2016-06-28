@@ -41,8 +41,12 @@ new Promise((resolve, reject) => {
     server.on("request", (request, response) => {
         const pathname = `/${request.method.toUpperCase()}${url.parse(request.url).pathname}`
         const dispatch = router.dispatchRoute(pathname, {request, response})
+
         dispatch.addEventListener("error", e => {
-            throw e.error
+            console.error(e.detail)
+
+            response.statusCode = 500
+            response.end(e.detail&&e.detail.stack)
         })
         dispatch.addEventListener("routing", e => {
             if ( !e.count )
