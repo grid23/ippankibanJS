@@ -60,4 +60,16 @@ describe("CSSRule", () => {
         chai.expect(rule.getProperty("border")).to.equal("1px solid red")
         chai.expect(CSSRule.isImplementedBy(rule)).to.be.true
     })
+
+    it("cssRule.setProperty(prop, value)", done => {
+        const rule = new CSSRule(".foo")
+
+        rule.addEventListener("csstextupdate", e => {
+            chai.expect(!!rule.getProperty("background").match("black")).to.be.true
+
+            done()
+        })
+
+        rule.setProperty("background", "black")
+    })
 })
