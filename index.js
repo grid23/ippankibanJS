@@ -1,25 +1,29 @@
 "use strict"
 
 module.exports = {
-    class: require("./lib/class.js").class
-  , errors: require("./lib/class.js")
+    class: require("./lib/class").class
+  , errors: require("./lib/errors")
   , domready: require("./lib/domready")
+  , CSSConditionalRule: require("./lib/CSSConditionalRule").CSSConditionalRule
+  , CSSMediaRule: require("./lib/CSSMediaRule").CSSMediaRule
   , CSSRule: require("./lib/CSSRule").CSSRule
-  , Event: require("./lib/Event.js").Event
-  , EventDispatcher: require("./lib/EventDispatcher.js").EventDispatcher
-  , EventTarget: require("./lib/EventTarget.js").EventTarget
-  , native: require("./lib/native.js").native
+  , CSSRule: require("./lib/CSSRule").CSSRule
+  , Event: require("./lib/Event").Event
+  , EventDispatcher: require("./lib/EventDispatcher").EventDispatcher
+  , EventTarget: require("./lib/EventTarget").EventTarget
+  , native: require("./lib/native").native
   , Model: require("./lib/Model").Model
   , Node: require("./lib/Node").Node
   , Route: require("./lib/Route").Route
   , RouteDispatcher: require("./lib/RouteDispatcher").RouteDispatcher
   , Router: require("./lib/Router").Router
-  , Serializer: require("./lib/Serializer.js").Serializer
+  , Serializer: require("./lib/Serializer").Serializer
+  , Stylesheet: require("./lib/Stylesheet").Stylesheet
   , singleton: require("./lib/class").singleton
-  , type: require("./lib/type.js").type
-  , UID: require("./lib/UID.js").UID
-  , View: require("./lib/View.js").View
+  , type: require("./lib/type").type
+  , UID: require("./lib/UID").UID
+  , View: require("./lib/View").View
   , ZExpression: require("./lib/ZParser").ZExpression
-  , ZParser: require("./lib/ZParser.js").ZParser
+  , ZParser: require("./lib/ZParser").ZParser
   //, : require("./lib/.js")
 }
