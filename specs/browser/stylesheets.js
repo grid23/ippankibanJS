@@ -83,7 +83,7 @@ describe("Stylesheet", () => {
             ss.deleteRule(rule)
             .catch(e => { throw e })
             .then(() => {
-                chai.expect(ss.sheet.cssRules.length).to.equal(2)
+                chai.expect(ss.sheet.cssRules.length).to.equal(1)
                 chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("transparent")
                 chai.expect(getComputedStyle(dummy).getPropertyValue("color")).to.equal("rgb(255, 0, 0)")
 
