@@ -16,8 +16,8 @@ describe("CSSMediaRule", () => {
     const CSSConditionalRule = require("lib").CSSConditionalRule
     const CSSMediaRule = require("lib").CSSMediaRule
 
-    it ("new CSSMediaRule", () => {
-        const rule = new CSSMediaRule("@media(min-width:500px){}")
+    it ("new CSSMediaRule(csstext)", () => {
+        const rule = new CSSMediaRule("@media(min-width:500px){ .foo{ background: black } }")
 
         chai.expect(CSSConditionalRule.isImplementedBy(rule)).to.be.true
         chai.expect(CSSMediaRule.isImplementedBy(rule)).to.be.true

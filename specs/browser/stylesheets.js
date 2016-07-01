@@ -92,4 +92,86 @@ describe("Stylesheet", () => {
 
         })
     })
+
+    it("stylesheet.insertRule(cssMediaRule)", done => {
+        const dummy = ZParser.parse("div.fu").tree.childNodes[0]
+        const ss = new Stylesheet
+        const media = new CSSMediaRule("@media(min-width:1px){ .fu { background: rgb(255,0,0);} }")
+        const rule1 = new CSSRule(".fu{ background: rgb(0,255,0)  }")
+        const rule2 = new CSSRule(".fu{ background: rgb(0,0,255)  }")
+
+        Promise.all([
+            media.insertRule(rule1)
+          , ss.insertRule(media)
+        ])
+        .catch(e => { throw e })
+        .then(()=>{
+            chai.expect(ss.sheet.cssRules.length).to.equal(1)
+            chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(0, 255, 0)")
+
+            media.insertRule(rule2).then(()=>{
+                chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(0, 0, 255)")
+                done()
+            })
+        })
+    })
+
+    it("stylesheet.deleteRule(cssMediaRule)", done => {
+        const dummy = ZParser.parse("div.z").tree.childNodes[0]
+        const ss = new Stylesheet
+        const media = new CSSMediaRule("@media(min-width:1px){ .z { background: rgb(255,0,0);} }")
+        const rule1 = new CSSRule(".z{ background: rgb(0,255,0)  }")
+        const rule2 = new CSSRule(".z{ background: rgb(0,0,255)  }")
+
+        Promise.all([
+            media.insertRule(rule1)
+          , ss.insertRule(media)
+        ])
+        .catch(e => { throw e })
+        .then(()=>{
+            chai.expect(ss.sheet.cssRules.length).to.equal(1)
+            chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(0, 255, 0)")
+
+            media.insertRule(rule2).then(()=>{
+                chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(0, 0, 255)")
+
+                ss.deleteRule(media).then(()=>{
+                    try {
+                        chai.expect(ss.sheet.cssRules.length).to.equal(0)
+                        chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("transparent")
+                    } catch(e){
+                        console.log(e)
+                    }
+
+                    done()
+                })
+            })
+        })
+    })
+
+    it("stylesheet.insertRule(cssMediaRule) | add/remove cssMediaRules to cssMediaRule", done => {
+        const dummy = ZParser.parse("div.fu").tree.childNodes[0]
+        const ss = new Stylesheet
+        const media1 = new CSSMediaRule("@media(min-width:1px){ .fu { background: rgb(255,0,0);} }")
+        const media2 = new CSSMediaRule("@media(min-width:1px){ .fu { background: rgb(0,255, 0);} }")
+
+        Promise.all([
+            ss.insertRule(media1)
+        ])
+        .then(()=>{
+            chai.expect(ss.sheet.cssRules.length).to.equal(1)
+            chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(255, 0, 0)")
+
+            media1.insertRule(media2).then(()=>{
+                chai.expect(ss.sheet.cssRules.length).to.equal(1)
+                chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(0, 255, 0)")
+
+                media1.deleteRule(media2).then(()=>{
+                    chai.expect(getComputedStyle(dummy).getPropertyValue("background-color")).to.equal("rgb(255, 0, 0)")
+
+                    done()
+                })
+            })
+        })
+    })
 })
