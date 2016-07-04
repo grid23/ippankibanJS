@@ -193,6 +193,19 @@ describe("Model", () => {
             })
         })
 
+        it (`model.read("*")`, done => {
+            const model = new Model({
+                "foo": "bar"
+              , "bar": "foo"
+            })
+
+            model.read("*", (err, data) => {
+                chai.expect(data.foo).to.equal("bar")
+                chai.expect(data.bar).to.equal("foo")
+                done()
+            })
+        })
+
         describe("hooks", ()=>{
             it("when a key is read, the value is invoked through the defined hook, if traced, a entry is added with the hooked value", done=>{
                 let m = new Model({ foofoo: "bar" })
