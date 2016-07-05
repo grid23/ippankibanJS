@@ -19,6 +19,7 @@ module.exports = {
   , RouteDispatcher: require("./lib/RouteDispatcher").RouteDispatcher
   , Router: require("./lib/Router").Router
   , Serializer: require("./lib/Serializer").Serializer
+  , Service: require("./lib/Service").Service
   , Stylesheet: require("./lib/Stylesheet").Stylesheet
   , singleton: require("./lib/class").singleton
   , type: require("./lib/type").type
