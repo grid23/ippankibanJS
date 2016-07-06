@@ -149,4 +149,19 @@ describe("Collection", () => {
             })
         })
     })
+
+    it("collection.fecth(service)", done => {
+        const col = new Collection
+
+        col.fetch(location.protocol+location.host+"/specs/data.json", (err, created) => {
+            chai.expect(col.size).to.equal(4)
+
+            col.models[0].read(["fu", "foo"], (err, data) => {
+                chai.expect(data.foo).to.equal("bar")
+                chai.expect(data.fu).to.equal(0)
+
+                done()
+            })
+        })
+    })
 })

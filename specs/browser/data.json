@@ -1,0 +1,6 @@
+[
+    { "foo": "bar", "fu": 0 },
+    { "foo": "biz", "fu": 1 },
+    { "foo": "biz", "fu": 2 },
+    { "foo": "bar", "fu": 3 }
+]
