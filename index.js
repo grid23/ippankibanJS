@@ -4,6 +4,7 @@ module.exports = {
     class: require("./lib/class").class
   , errors: require("./lib/errors")
   , domready: require("./lib/domready")
+  , Collection: require("./lib/Collection").Collection
   , Cookie: require("./lib/Cookie").Cookie
   , CSSConditionalRule: require("./lib/CSSConditionalRule").CSSConditionalRule
   , CSSMediaRule: require("./lib/CSSMediaRule").CSSMediaRule
