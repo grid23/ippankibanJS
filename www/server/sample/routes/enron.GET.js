@@ -10,12 +10,12 @@ const Document = klass(View, {
     constructor: function(){
         View.call(this)
     }
-  , template: "html>head+body{enron}"
+  , template: "html>head(meta[charset=utf-8]+title{enron sample}+script[src=/js/enron.js])+body"
 })
 
 module.exports.path = [
     "/GET/datasets/:set.:format"
-  , "/GET/datasets/enron"
+  , "/GET/enron"
 ]
 module.exports.handleRoute = (route, next) => {
     const onerror = e => route.response.end(e.message)

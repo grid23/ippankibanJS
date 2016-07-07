@@ -164,4 +164,20 @@ describe("Collection", () => {
             })
         })
     })
+
+    it("collection.list([key, ...])", done => {
+        const col = new Collection
+
+        col.fetch(location.protocol+location.host+"/specs/data.json", (err, created) => {
+            chai.expect(col.size).to.equal(4)
+
+            col.list(["fu", "foo"], (err, lists) => {
+                chai.expect(lists.fu.length).to.equal(4)
+                chai.expect(lists.foo.length).to.equal(2)
+                chai.expect(lists.foo.indexOf("bar") !== -1).to.be.true
+                chai.expect(lists.foo.indexOf("biz") !== -1).to.be.true
+                done()
+            })
+        })
+    })
 })
