@@ -253,10 +253,11 @@ const main = ({nodes:{body}}) => {
         stylesheet.insertRule(subjectCSS, dateCSS, recCSS, textCSS, xCSS)
 
         return {
-            constructor: function(){
-                View.apply(this, arguments)
-
-                i18n.appendChild(this.model)
+            constructor: function(mail){
+                const model = new Model
+                i18n.appendChild(mail)
+                mail.appendChild(model)
+                View.call(this, model)
 
                 this.model.read("recipients", (err, data) => {
                     const recipients = data.recipients || []
