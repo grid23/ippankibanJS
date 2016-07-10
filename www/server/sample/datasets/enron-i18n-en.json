@@ -1,0 +1,21 @@
+{
+    "explanation": [
+        "This page is sample experimentation around the manipulation and use of datasets"
+      , "First, a huge dataset (15mb) of e-mails is read and parsed."
+      , "From that set, a `collection` containing around 5000 `models` is created."
+      , "From all the models, all possible *senders* are extracted to create the select list options."
+      , "When a *sender* is selected, a subset `collection` of `models` corresponding to the *sender* is isolated and is used to display a list of e-mails."
+      , "The top animation should not stop down because of heavy data processing. And It should stay as fluid as possible."
+    ]
+
+  , "select_lang": "Also try a lang change without reload :"
+  , "lang_fr": "français"
+  , "lang_en": "english"
+  , "select_sender": "choose a sender"
+  , "submit_sender": "display mails"
+
+  , "mail_subject": "subject: "
+  , "mail_date": "send at: "
+  , "mail_recipients": "recipients: "
+  , "mail_body": "mail body: "
+}

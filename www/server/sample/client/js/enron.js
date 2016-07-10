@@ -10,29 +10,85 @@ const stylesheet = new ippan.Stylesheet
 const CSSRule = ippan.CSSRule
 const Collection = ippan.Collection
 const EventTarget = ippan.EventTarget
+const Model = ippan.Model
+const Service = ippan.Service
 const View = ippan.View
 
 const main = ({nodes:{body}}) => {
     const ecol = new Collection
-    const dataready = new Promise((resolve, reject) => {
-        ecol.fetch({url: location.protocol+location.host+"/datasets/enron.json"})
-        ecol.addEventListener("fetchcomplete", e => {
-            ecol.list(["sender", "recipents"], (err, {sender:senders, recipients}) => {
-                console.log(senders.length)
-                resolve({senders, recipients})
+    const i18n = new Model
+
+    const fetch_i18n = lang => {
+        return new Promise((resolve, reject) => {
+            new Service(`/datasets/enron-i18n-${lang}.json`)
+            .request((err, status, request) => {
+                console.log(JSON.parse(request.responseText))
+                i18n
+                  .write(JSON.parse(request.responseText))
+                  .then(() => resolve(i18n))
             })
         })
+    }
+
+    const dataready = Promise.all([
+        new Promise((resolve, reject) => {
+            ecol.fetch({url: location.protocol+location.host+"/datasets/enron.json"})
+            ecol.addEventListener("fetchcomplete", e => {
+                ecol.list(["sender", "recipents"], (err, {sender:senders, recipients}) => {
+                    console.log(senders.length)
+                    resolve({senders, recipients})
+                })
+            })
+        })
+      , fetch_i18n("en")
+    ])
+    .then(([dataset, i18N]) => {
+        return dataset
     })
 
     const App = singleton(View, {
         constructor: function(){
-            View.apply(this)
+            View.call(this, i18n)
 
+            this.query("lang").appendChild(new LangChange().fragment)
+            this.query("explanations").appendChild(new Explanation().fragment)
             this.query("anim").appendChild(new Anim().fragment)
-            this.query("header").appendChild(new Selector().fragment)
             this.query("article").appendChild(new Content().fragment)
+            this.query("header").appendChild(new Selector().fragment)
         }
-      , template: "section>div@console>div@anim+header@header+article@article"
+      , template: "(section>div@anim) + (section@explanations) + (section@lang) + (section>div@console>+header@header+article@article)"
+    })
+
+    const LangChange = klass(View, statics => {
+
+        return {
+            constructor: function(){
+                View.call(this, i18n)
+
+                this.queryAll("a").forEach(a => {
+                    a.addEventListener("click", e => {
+                        e.preventDefault()
+
+                        fetch_i18n(e.target.getAttribute("data-lang"))
+                    })
+                })
+            }
+          , template: "p{$select_lang}+ul>(li>a[href=#][data-lang=en]{$lang_en})+(li>a[href=#][data-lang=fr]{$lang_fr})"
+        }
+    })
+
+    const Explanation = klass(View, statics => {
+
+        return {
+            constructor: function(){
+                View.call(this, i18n)
+
+                i18n.read("*", (err, data) => {
+                    console.log(data)
+                })
+            }
+          , template: "ul > li{$explanation.0} + li{$explanation.1} + li{$explanation.2} + li{$explanation.3} + li{$explanation.4} + li{$explanation.5}"
+        }
     })
 
     const Anim = klass(View, statics => {
@@ -75,7 +131,7 @@ const main = ({nodes:{body}}) => {
 
     const Selector = klass(View, {
         constructor: function(){
-            View.call(this, this)
+            View.call(this, i18n)
 
             this.query("form").addEventListener("submit", e => {
                 e.preventDefault()
@@ -132,7 +188,7 @@ const main = ({nodes:{body}}) => {
                 append().then(onidle)
             })
         }
-      , template: "form@form > (select@select[name=sender][disabled] > option{choose a sender}) + button[type=submit][disabled]{show mails}"
+      , template: "form@form > (select@select[name=sender][disabled] > option{$select_sender}) + button[type=submit][disabled]{$submit_sender}"
     })
 
     const Option = klass(View, {
@@ -192,12 +248,15 @@ const main = ({nodes:{body}}) => {
         const subjectCSS = new CSSRule(".msubject{}")
         const dateCSS = new CSSRule(".mdate{ display: block; color: grey;}")
         const recCSS = new CSSRule(".mrec{ display: block; text-style:italic;}")
-        const textCSS = new CSSRule(".mrec{}")
-        stylesheet.insertRule(subjectCSS, dateCSS, recCSS, textCSS)
+        const textCSS = new CSSRule(".mtext{margin:0;}")
+        const xCSS = new CSSRule(".m{display:block; color: red}")
+        stylesheet.insertRule(subjectCSS, dateCSS, recCSS, textCSS, xCSS)
 
         return {
             constructor: function(){
                 View.apply(this, arguments)
+
+                i18n.appendChild(this.model)
 
                 this.model.read("recipients", (err, data) => {
                     const recipients = data.recipients || []
@@ -205,7 +264,7 @@ const main = ({nodes:{body}}) => {
                     this.model.write("recipients_normalized", recipients.join(", "))
                 })
             }
-          , template: "li > (hgroup > h1.msubject#$_id{$subject} + span.mdate{$date} + span.mrec{$recipients_normalized}) + p.mtext{$text}"
+          , template: "li > (hgroup > (h1.msubject#$_id>span.m{$mail_subject}+span{$subject}) + (span.mdate>span.m{$mail_date}+span{$date}) + (span.mrec>span.m{$mail_recipients}+span{$recipients_normalized})) + (article>span.m{$mail_body}+p.mtext{$text})"
         }
     })
 

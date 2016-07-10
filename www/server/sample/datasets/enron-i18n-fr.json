@@ -1,0 +1,20 @@
+{
+    "explanation": [
+        "Cette page est une expérimentation autour de la manipulation et l'utilisation de jeux de données."
+      , "Pour commencer, un imposant jeu de données de courriels est chargé et parcouru."
+      , "De ce jeu de données, une `collection` contenant plus de 5000 `models` est créé."
+      , "De tous ces `models` sont extraits tous les possibles *expéditeurs* pour créer les options de la list de sélection."
+      , "Quand un *expéditeur est sélectionné, un `subset` de la `collection` est isolé. Il contient l'ensemble des `models` relatifs à cet *expéditeur*."
+      , "L'animation au top de la page ne devrait pas s'arrêter durant tout le processus. Elle devrait rester aussi fluide que possible."
+    ]
+
+  , "select_lang": "Essayez aussi un changement de langue sans rechargement :"
+  , "lang_fr": "français"
+  , "lang_en": "english"
+  , "select_sender": "choisir un expéditeur"
+  , "submit_sender": "afficher les courriels"
+
+  , "mail_subject": "sujet: "
+  , "mail_date": "envoyé: "
+  , "mail_recipients": "destinataires: "
+}

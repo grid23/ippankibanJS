@@ -21,9 +21,8 @@ module.exports.handleRoute = (route, next) => {
     const onerror = e => route.response.end(e.message)
 
     if ( route.matches.format == "json" ) {
-        const filepath = path.join(path.resolve(process.cwd(), __dirname), "../datasets/enron.json")
+        const filepath = path.join(path.resolve(process.cwd(), __dirname), `../datasets/${route.matches.set}.${route.matches.format}`)
         fs.stat(filepath, function(err, stats){
-
             route.response.writeHead(200, {
                   "Content-Type": "application/json; charset=UTF-8"
                 , "Content-Length": stats.size
