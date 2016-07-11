@@ -14,12 +14,17 @@ module.exports.Mime = klass(EventTarget, statics => {
     const mimes = new WeakMap
     const collection = new Collection
 
-    mimetypes.forEach(([path, template, extension]) => {
-        collection.addModel({path, template, extension})
+    mimetypes.forEach(([name, template, extension]) => {
+        collection.addModel({name, template, extension})
     })
 
     Object.defineProperties(statics, {
-        lookup: { enumerable: true,
+        define: { enumerable: true,
+            value: function(name, template, extension){
+                collection.addModel({name, template, extension})
+            }
+        }
+      , lookup: { enumerable: true,
             value: function(...args){
                 const cb = typeOf(args[args.length-1]) == "function" ? args.pop() : ()=>{}
                 const lookup = args.shift() || ""
