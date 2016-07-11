@@ -1,6 +1,7 @@
 # node
 node_modules/
 archive/
+.npmrc
 
 #svn
 .svn/
