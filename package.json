@@ -1,9 +1,9 @@
 {
-    "name": "ippan.js"
+    "name": "ippan"
   , "version": "0.0.0"
 
   , "engines": {
-        "nodejs": "^6.2.1"
+        "nodejs": "^6.3.0"
     }
 
   , "dependencies": {
