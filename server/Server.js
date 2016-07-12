@@ -72,9 +72,12 @@ module.exports.Server = klass(Router, statics => {
     })
 
     return {
-        constructor: function(){
+        constructor: function(port){
             Router.apply(this, arguments)
             servers.set(this, Object.create(null))
+
+            if ( port && typeOf(port) == "number" )
+              servers.get(this).port = port
 
             this.Route = module.exports.Route
         }
@@ -86,11 +89,17 @@ module.exports.Server = klass(Router, statics => {
             }
         }
       , listen: { enumerable: true,
-            value: function(){
-                if ( !!servers.get(this).server )
+            value: function(port){
+                if ( port && typeOf(port) == "number" )
+                  servers.get(this).port = servers.get(this).port || port
+
+                if ( !servers.get(this).port )
                   throw new Error(errors.TODO)
 
-                servers.get(this).server = !servers.get(this).secure
+                if ( !!servers.get(this).server && !!server.get(this).server.listening )
+                  return
+
+                servers.get(this).server = !this.secure || !this.options
                                          ? new http.Server
                                          : new https.Server(this.options)
 
@@ -107,7 +116,15 @@ module.exports.Server = klass(Router, statics => {
                       })
                 })
 
-                return http.Server.prototype.listen.apply(servers.get(this).server, arguments)
+                return http.Server.prototype.listen.apply(servers.get(this).server, [servers.get(this).port])
+            }
+        }
+      , stop: { enumerable: true,
+            value: function(){
+                if ( !!servers.get(this).server && !server.get(this).server.listening )
+                  return
+
+                servers.get(this).server.close()
             }
         }
     }
