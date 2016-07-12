@@ -1,0 +1,58 @@
+{
+    "babelify": {
+
+    }
+  , "browserify": {
+          "basedir": "./"
+        , "exclude": []
+        , "external": []
+        , "fullPaths": true
+        , "ignore": []
+      }
+  , "css-modulesify": {
+
+    }
+  , "cssnano": {
+
+    }
+  , "partialify": {
+        "alsoAllow": ["css", "hbs", "tpl", "txt"]
+    }
+  , "uglify": {
+          "compressor": {
+              "sequences": true
+            , "properties": true
+            , "dead_code": true
+            , "drop_debugger": true
+            , "unsafe": false
+            , "conditionals": true
+            , "evaluate": true
+            , "loops": true
+            , "unused": true
+            , "hoist_funs": true
+            , "hoist_vars": true
+            , "if_return": true
+            , "join_vars": true
+            , "cascade": true
+            , "warnings": true
+            , "negate_iife": true
+            , "pure_getters": false
+            , "pure_funcs": false
+            , "drop_console": true
+          }
+        , "outputStream": {
+              "beautify": false
+            , "indent_level": 2
+            , "indent_start": 0
+            , "space_colon": false
+            , "ascii_only": true
+            , "inline_script": true
+            , "bracketize": false
+            , "semicolons": true
+            , "preamble": null
+          }
+        , "rpreserve": "(\\$[0-9a-zA-Z_$]*)"
+        , "strict": true
+      }
+
+}

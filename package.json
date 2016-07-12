@@ -11,8 +11,10 @@
     }
   , "devDependencies": {
         "browserify": "*"
+      , "babelify": "*"
       , "css-modulesify": "*"
-      , "css-nano": "*"
+      , "cssnano": "*"
+      , "envify": "*"
       , "partialify": "*"
 
       , "uglify-js": "*"

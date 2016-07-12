@@ -31,17 +31,7 @@ module.exports.ChangeEvent = klass(Event, {
 
 module.exports.ErrorEvent = klass(Event, {
     constructor: function(err){
-        Event.call(this, "error")
-
-        eventWM.get(this).error = err
-    }
-  , error: { enumerable: true,
-        get: function(){ return eventWM.get(this).error }
-    }
-  , throw: { enumerable: true,
-        value: function(){
-            throw eventWM.get(this).error
-        }
+        Event.call(this, "error", err)
     }
 })
 
@@ -77,7 +67,7 @@ module.exports.Watcher = klass(Node, statics => {
 
             watchers.set(this, Object.create(null))
 
-            this.root = dict.root || "/"
+            this.root = dict.root || process.cwd()
             this.path = dict.path || __filename
 
             this.recursive = dict.recursive || true
@@ -92,13 +82,13 @@ module.exports.Watcher = klass(Node, statics => {
                     : null
 
                 if ( err )
-                  return setTimeout(() => this.dispatchEvent( new this.ErrorEvent(err) ), 4)
+                  return this.dispatchEvent( new this.ErrorEvent(err) )
 
                 watchers.get(this).isFile = stats.isFile()
                 fs.watch(this.path, { recursive: this.recursive, peristent: this.persistent }, (e, filename) => {
                     if ( filename && this.ignore.indexOf(filename) !== -1 )
                       return
-                    console.log(this.path)
+
                     this.handleChange(e, filename)
                 })
             })
