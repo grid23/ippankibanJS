@@ -11,7 +11,13 @@
     }
   , "devDependencies": {
         "browserify": "*"
-      , "mocha": "*"
+      , "css-modulesify": "*"
+      , "css-nano": "*"
+      , "partialify": "*"
+
+      , "uglify-js": "*"
+
       , "chai": "*"
+      , "mocha": "*"
     }
 }

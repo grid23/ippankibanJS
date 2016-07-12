@@ -96,7 +96,7 @@ module.exports.Server = klass(Router, statics => {
                 if ( !servers.get(this).port )
                   throw new Error(errors.TODO)
 
-                if ( !!servers.get(this).server && !!server.get(this).server.listening )
+                if ( !!servers.get(this).server && !!servers.get(this).server.listening )
                   return
 
                 servers.get(this).server = !this.secure || !this.options
@@ -121,7 +121,7 @@ module.exports.Server = klass(Router, statics => {
         }
       , stop: { enumerable: true,
             value: function(){
-                if ( !!servers.get(this).server && !server.get(this).server.listening )
+                if ( !!servers.get(this).server && !servers.get(this).server.listening )
                   return
 
                 servers.get(this).server.close()
