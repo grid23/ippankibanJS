@@ -8,7 +8,7 @@
 
   , "dependencies": {
       "jsdom": "*"
-      
+
     , "browserify": "*"
     , "babelify": "*"
     , "babel-preset-es2015": "*"
@@ -22,7 +22,7 @@
     , "uglify-js": "https://github.com/mishoo/UglifyJS2.git#harmony"
     }
   , "devDependencies": {
-      , "chai": "*"
+        "chai": "*"
       , "mocha": "*"
     }
 }
