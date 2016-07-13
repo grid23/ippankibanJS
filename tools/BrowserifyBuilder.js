@@ -103,7 +103,6 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
             value: function(file, directory){
                 this.browserify.basedir = this.browserify.basedir || this.root
                 this["css-modulesify"].rootDir = this["css-modulesify"].rootDir || this.root
-
                 this["css-modulesify"].output = this["css-modulesify"].output || this.to_css
 
                 return new Promise((resolve, reject) => {
@@ -125,14 +124,15 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                           new Promise((resolve, reject) => {
                               bundle.on("bundle", stream => {
                                   const op = stream.pipe(fs.createWriteStream(this.to))
-                                  op.on("error", reject)
+
+                                  op.on("error", e => reject(e))
                                   op.on("finish", resolve)
                               })
                           })
                         , new Promise((resolve, reject) => {
                               bundle.on("css stream", stream => {
                                   const op = stream.pipe(fs.createWriteStream(this["css-modulesify"].output))
-                                  op.on("error", reject)
+                                  op.on("error", e => reject(e))
                                   op.on("finish", resolve)
                               })
                           })
@@ -153,27 +153,22 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                                       let ast, output
                                       const buffer = Buffer.concat(chunks).toString()
 
-                                      try {
-                                          ast = uglify.parse(buffer)
-                                          ast.figure_out_scope()
-                                          ast.transform(compressor)
-                                          ast.figure_out_scope()
+                                      ast = uglify.parse(buffer)
+                                      ast.figure_out_scope()
+                                      ast.transform(compressor)
+                                      ast.figure_out_scope()
 
-                                          output = uglify.OutputStream(this.uglify.outputStream)
-                                          ast.print(output)
+                                      output = uglify.OutputStream(this.uglify.outputStream)
+                                      ast.print(output)
 
-                                          fs.writeFile(this.to, output.toString(), "utf8", error => {
-                                              if ( error ) {
-                                                  this.dispatchEvent("error", error)
-                                                  reject(error)
-                                              }
+                                      fs.writeFile(this.to, output.toString(), "utf8", error => {
+                                          if ( error ) {
+                                              this.dispatchEvent("error", error)
+                                              reject(error)
+                                          }
 
-                                              resolve()
-                                          })
-                                        } catch(error){
-                                            this.dispatchEvent("error", error)
-                                            return reject(error)
-                                        }
+                                          resolve()
+                                      })
                                   })
                               })
                           })
@@ -188,7 +183,6 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                                       cssnano.process(buffer, this.cssnano).then(result => {
                                           fs.writeFile(this.to, result.css, "utf8", error => {
                                               if ( error ) {
-                                                  this.dispatchEvent("error", error)
                                                   reject(error)
                                               }
 
@@ -204,12 +198,14 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                           resolve()
                       })
 
-
+                    bundle.bundle()
                     bundle.on("error", error => {
-                        this.dispatch("error", error)
                         reject(error)
                     })
-                    bundle.bundle()
+                })
+                .catch(e => {
+                    console.log("xxxxxxx")
+                    this.dispatchEvent("error", e)
                 })
             }
         }
