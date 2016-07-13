@@ -85,7 +85,6 @@ module.exports.IBuilder = klass(Node, statics => {
         }
       , handleEvent: { enumerable: true,
             value: function(e){
-                console.log("foo")
                 let rv
                 if ( !Watcher.ChangeEvent.isImplementedBy(e) )
                   return
