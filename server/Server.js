@@ -114,7 +114,7 @@ module.exports.Server = klass(Router, statics => {
                       })
                 })
 
-                return http.Server.prototype.listen.apply(servers.get(this).server, [servers.get(this).port])
+                return servers.get(this).server.listen(servers.get(this).port)
             }
         }
       , stop: { enumerable: true,
