@@ -14,8 +14,6 @@ const Event = require("../lib/Event").Event
 const Route = require("../lib/Route").Route
 const Router = require("../lib/Router").Router
 
-const ROOT_PATH = path.resolve(process.cwd(), path.dirname(require.main && require.main.filename ? require.main.filename : __filename) , "./")
-
 module.exports.Route = klass(Route, statics => {
     const routes = new WeakMap
 
