@@ -5,10 +5,12 @@ const fs = require("fs")
 const http = require("http")
 const https = require("https")
 const klass = require("../lib/class").class
+const net = require("net")
 const objectify = require("../lib/Serializer").Serializer.objectify
 const parse = require("url").parse
 const path = require("path")
 const typeOf = require("../lib/type").typeOf
+const inherits = require("util").inherits
 
 const Event = require("../lib/Event").Event
 const Route = require("../lib/Route").Route
@@ -56,7 +58,7 @@ module.exports.CatchAllRoute = klass(module.exports.Route, statics => {
     }
 })
 
-module.exports.Server = klass(Router, statics => {
+module.exports.Server = klass(Router, /* via util.inherits: http.Server, net.Server */ statics => {
     const servers = new WeakMap
 
     Object.defineProperties(statics, {
@@ -70,60 +72,37 @@ module.exports.Server = klass(Router, statics => {
     })
 
     return {
-        constructor: function(port){
-            Router.apply(this, arguments)
+        constructor: function(){
             servers.set(this, Object.create(null))
 
-            if ( port && typeOf(port) == "number" )
-              servers.get(this).port = port
+            Router.apply(this, arguments)
+            this.Route = module.exports.Route // from Router
 
-            this.Route = module.exports.Route
+            http.Server.call(this)
+
+            this.on("request", (request, response) => {
+
+                this.dispatchRoute(new this.Route(request, response))
+                  .addEventListener("routing", e => {
+                      if ( !e.count )
+                        this.dispatchRoute(new this.CatchAllRoute(request, response))
+                          .addEventListener("routing", e => {
+                              if ( !e.count )
+                                response.writeHead("404"),
+                                response.end()
+                          })
+                  })
+            })
         }
-      , CatchAllRoute: { enumerable: true,
-            get: function(){ return servers.get(this).Route || module.exports.CatchAllRoute }
+      , CatchAllRoute: { enumerable: true, configurable: true,
+            get: function(){ return servers.get(this).CatchAllRoute || module.exports.Server.CatchAllRoute }
           , set: function(v){
                 if ( Route.isImplementedBy(v) && typeOf(v) == "function" )
                   servers.get(this).CatchAllRoute = v
             }
         }
-      , listen: { enumerable: true,
-            value: function(port){
-                if ( port && typeOf(port) == "number" )
-                  servers.get(this).port = servers.get(this).port || port
-
-                if ( !servers.get(this).port )
-                  throw new Error(errors.TODO)
-
-                if ( !!servers.get(this).server && !!servers.get(this).server.listening )
-                  return
-
-                servers.get(this).server = !this.secure || !this.options
-                                         ? new http.Server
-                                         : new https.Server(this.options)
-
-                servers.get(this).server.on("request", (request, response) => {
-                    this.dispatchRoute(new this.Route(request, response))
-                      .addEventListener("routing", e => {
-                          if ( !e.count )
-                            this.dispatchRoute(new this.Route(request, response))
-                              .addEventListener("routing", e => {
-                                  if ( !e.count )
-                                    response.writeHead("404"),
-                                    response.end()
-                              })
-                      })
-                })
-
-                return servers.get(this).server.listen(servers.get(this).port)
-            }
-        }
-      , stop: { enumerable: true,
-            value: function(){
-                if ( !!servers.get(this).server && !servers.get(this).server.listening )
-                  return
-
-                servers.get(this).server.close()
-            }
-        }
     }
 })
+
+inherits(module.exports.Server, net.Server)
+inherits(module.exports.Server, http.Server)
