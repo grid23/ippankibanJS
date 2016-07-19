@@ -97,11 +97,15 @@ module.exports.WebSocket = klass(Node, statics => {
                 const ismasked = buffer[1] & 128
                 const ispong = (type - 128) == 10
                 const isping = (type - 128) == 9
+                const istext = (type - 128) == 1
 
                 if ( ispong )
                     return this.dispatchEvent("pong")
                 if ( isping )
                     return this.pong()
+
+                if ( !istext )
+                  return console.log("ignored opcode:", type -128 )
 
                 let start = 0
                 const length = (buffer[1] & 127) === 126 ? (start = 8, buffer.slice(2,3))
@@ -202,7 +206,7 @@ module.exports.WebSocket = klass(Node, statics => {
                 //TODO, no need to recreate the msg everytime
                 return new Promise((resolve, reject) => {
                     const message = new Buffer(2)
-                    message[0] = 137 // "10001001"
+                    message[0] = 128 | 9 // "10001001"
                     message[1] = 0   // "00000000"
 
                     const onpong = e => {
@@ -222,7 +226,7 @@ module.exports.WebSocket = klass(Node, statics => {
                 //TODO, no need to recreate the msg everytime
 
                 const message = new Buffer(2)
-                message[0] = 138 // "10001010"
+                message[0] = 128 | 10  // "10001010"
                 message[1] = 0   // "00000000"
                 sockets.get(this).socket.write(message)
             }
@@ -261,7 +265,8 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                       , `Upgrade: websocket`
                       , `Connection: ${headers["connection"]}`
                       , `Sec-WebSocket-Accept: ${hash}`
-                      , `Sec-WebSocket-Protocol: ${headers["sec-websocket-protocol"].split(",")[0]}` //TODO
+                      , !!headers["sec-websocket-protocol"] ? `Sec-WebSocket-Protocol: ${headers["sec-websocket-protocol"].split(",")[0]}`
+                                                            : ``//TODO
                       , ``, ``
                     ].join('\r\n')
 
@@ -285,7 +290,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
         }
       , sockets: { enumerable: true,
             get: function(){
-                return [...upgrades.get(this).socket]
+                return [...upgrades.get(this).sockets.values()]
             }
         }
     }
