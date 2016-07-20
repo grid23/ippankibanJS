@@ -40,8 +40,8 @@ module.exports.SignalingUpgrade = klass(Router, WebSocketUpgrade, statics => {
                 socket.addEventListener("pong", e => console.log("pong"))
                 socket.addEventListener("close", e => console.log("close"))
 
-                socket.addEventListener("message", ({payload}) => {
-                    console.log("<=", payload)
+                socket.addEventListener("text", e => {
+                    let payload = e.unmask()
                     try { payload = JSON.parse(payload) }
                     catch(e){ return console.error(e) } //TODO
 

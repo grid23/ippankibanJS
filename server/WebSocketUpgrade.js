@@ -14,7 +14,7 @@ const Node = require("../lib/Node").Node
 const Server = require("./Server").Server
 const UID = require("../lib/UID").UID
 
-module.exports.SocketEvt = klass(Event, statics => {
+const SocketEvt = klass(Event, statics => {
     const events = eventWM
 
     Object.defineProperties(statics, {
@@ -28,7 +28,7 @@ module.exports.SocketEvt = klass(Event, statics => {
             if ( !module.exports.WebSocket.isImplementedBy(socket) )
               throw new TypeError(errors.TODO)
 
-            Event.call(this, module.exports.SocketEvt.NAME)
+            Event.call(this, SocketEvt.NAME)
             events.get(this).socket = socket
         }
       , socket: {  enumerable: true,
@@ -37,22 +37,158 @@ module.exports.SocketEvt = klass(Event, statics => {
     }
 })
 
-module.exports.SocketMessageEvt = klass(Event, statics => {
+const SocketMessageEvt = klass(Event, statics => {
     const events = eventWM
 
     Object.defineProperties(statics, {
-        "NAME": { enumerable: true,
+        NAME: { enumerable: true,
             value: "message"
         }
     })
 
+    const ops = {
+        1: "text"
+      , 2: "binary"
+      , 8: "close"
+      , 9: "ping"
+      ,10: "pong"
+    }
+
     return {
-        constructor: function(payload){
-            Event.call(this, module.exports.SocketMessageEvt.NAME)
-            events.get(this).payload = payload
+        constructor: function({ buffer, fin, rsv1, rsv2, rsv3, opcode, masked, length, start, mask }){
+            Event.call(this, SocketMessageEvt.NAME)
+
+            events.get(this).buffer = buffer
+            events.get(this).fin = fin
+            events.get(this).rsv1 = rsv1
+            events.get(this).rsv2 = rsv2
+            events.get(this).rsv3 = rsv3
+            events.get(this).opcode = opcode
+            events.get(this).op = ops[opcode]
+            events.get(this).masked = masked
+            events.get(this).mask = mask
+            events.get(this).length = length
+            events.get(this).start = start
         }
-      , payload: {  enumerable: true,
-            get: function(){ return events.get(this).payload }
+      , fin: { enumerable: true,
+            get: function(){ return events.get(this).fin }
+        }
+      , length: { enumerable: true,
+            get: function(){ return events.get(this).length }
+        }
+      , mask: { enumerable: true,
+            get: function(){ return events.get(this).mask }
+        }
+      , op: { enumerable: true,
+            get: function(){ return events.get(this).op }
+        }
+      , opcode: { enumerable: true,
+            get: function(){ return events.get(this).opcode }
+        }
+      , payload: { enumerable: true,
+            get: function(){
+                return events.get(this).buffer.slice(events.get(this).start).toString("utf8")
+            }
+        }
+      , unmask: { enumerable: true,
+            value: function(){
+                if ( !events.get(this).masked )
+                  return this.payload
+
+                const view = events.get(this).buffer.slice(events.get(this).start)
+                for ( let [i, v] of view.entries() )
+                  view[i] = v ^ events.get(this).mask[i%4]
+
+                return view.toString("utf8")
+            }
+        }
+    }
+})
+
+const SocketTextMessageEvt = klass(SocketMessageEvt, statics => {
+    const events = eventWM
+
+    Object.defineProperties(statics, {
+        NAME: { enumerable: true,
+            value: "text"
+        }
+    })
+
+    return {
+        constructor: function(e){
+            Event.call(this, SocketTextMessageEvt.NAME)
+
+            events.get(this).buffer = events.get(e).buffer
+            events.get(this).fin = events.get(e).fin
+            events.get(this).rsv1 = events.get(e).rsv1
+            events.get(this).rsv2 = events.get(e).rsv2
+            events.get(this).rsv3 = events.get(e).rsv3
+            events.get(this).opcode = events.get(e).opcode
+            events.get(this).op = events.get(e).op
+            events.get(this).masked = events.get(e).masked
+            events.get(this).mask = events.get(e).mask
+            events.get(this).length = events.get(e).length
+            events.get(this).start = events.get(e).start
+        }
+    }
+})
+
+const SocketBinaryMessageEvt = klass(SocketMessageEvt, statics => {
+    const events = eventWM
+
+    Object.defineProperties(statics, {
+        NAME: { enumerable: true,
+            value: "binary"
+        }
+    })
+
+    return {
+        constructor: function(e){
+            Event.call(this, SocketBinaryMessageEvt.NAME)
+
+            events.get(this).buffer = events.get(e).buffer
+            events.get(this).fin = events.get(e).fin
+            events.get(this).rsv1 = events.get(e).rsv1
+            events.get(this).rsv2 = events.get(e).rsv2
+            events.get(this).rsv3 = events.get(e).rsv3
+            events.get(this).opcode = events.get(e).opcode
+            events.get(this).op = events.get(e).op
+            events.get(this).masked = events.get(e).masked
+            events.get(this).mask = events.get(e).mask
+            events.get(this).length = events.get(e).length
+            events.get(this).start = events.get(e).start
+        }
+    }
+})
+
+const SocketPingEvt = klass(Event, statics => {
+    const events = eventWM
+
+    Object.defineProperties(statics, {
+        NAME: { enumerable: true,
+            value: "ping"
+        }
+    })
+
+    return {
+        constructor: function(e){
+            Event.call(this, SocketPingEvt.NAME)
+        }
+    }
+})
+
+const SocketPongEvt = klass(Event, statics => {
+    const events = eventWM
+
+    Object.defineProperties(statics, {
+        NAME: { enumerable: true,
+            value: "pong"
+        }
+    })
+
+    return {
+        constructor: function(e){
+            Event.call(this, SocketPongEvt.NAME)
         }
     }
 })
@@ -98,36 +234,57 @@ module.exports.WebSocket = klass(Node, statics => {
             sockets.get(this).uid = UID.uid()
             sockets.get(this).socket = socket
 
-            const ondata = buffer => { //TODO rewrite
-                const type = buffer[0]
-                const ismasked = buffer[1] & 128
-                const ispong = (type - 128) == 10
-                const isping = (type - 128) == 9
-                const istext = (type - 128) == 1
+            this.socket.on("data", buffer => {
+                let view = buffer.readUInt8(0)
+                const fin =  !!(view & 0x80)
+                const rsv1 = view & 0x40
+                const rsv2 = view & 0x20
+                const rsv3 = view & 0x10
+                const opcode = view & 0xf
 
-                if ( ispong )
-                    return this.dispatchEvent("pong")
-                if ( isping )
-                    return this.pong()
+                view = buffer.readUInt8(1)
+                const masked = !!(view & 0x80)
+                const {length, mask, start} = function(){
+                    const len = (view & 0x7f)
+                    const length = len < 126 ? len
+                                 : len == 126 ? buffer.readUInt16BE(2)
+                                 : (buffer.readUInt32BE(2) << 8) + buffer.readUInt32BE(6)
+                    const mask = !masked ? 0
+                               : len < 126 ? buffer.slice(2,6)
+                               : len == 126 ? buffer.slice(4, 8)
+                               : buffer.slice(10,14)
+                    const start = len < 126 && masked ? 6
+                                : len < 126 && !masked ? 2
+                                : len == 126 && masked ? 8
+                                : len == 126 && !masked ? 4
+                                : masked ? 14
+                                : 10
+                    return { length, mask, start }
+                }()
 
-                if ( !istext )
-                  return console.log("ignored opcode:", type -128 )
+                const socketMessageEvt = new SocketMessageEvt({ buffer, fin, rsv1, rsv2, rsv3, opcode, masked, length, start, mask })
 
-                let start = 0
-                const length = (buffer[1] & 127) === 126 ? (start = 8, buffer.slice(2,3))
-                             : (buffer[1] & 127) === 127 ? (start = 14, buffer.slice(2, 8))
-                             : (start = 6, buffer[1])
-                const mask = ismasked && buffer.slice(start-4, start)
-                const payload = ismasked ? buffer.slice(start) : buffer.slice(start-4)
+                this.dispatchEvent(socketMessageEvt)
+                if ( socketMessageEvt.cancelled )
+                  return
 
-                //decodedByte = encodedByte XOR masks[encodedByteIndex MOD 4]
-                if ( ismasked )
-                  for ( let [i, v] of payload.entries() )
-                    payload[i] = v ^ mask[i%4]
-
-                this.dispatchEvent( new module.exports.SocketMessageEvt(payload.toString("utf8")) )
-            }
-            sockets.get(this).socket.on("data", ondata)
+                switch ( socketMessageEvt.op ) {
+                    case "text":
+                      this.dispatchEvent(new SocketTextMessageEvt(socketMessageEvt))
+                      break
+                    case "binary":
+                      this.dispatchEvent(new SocketBinaryMessageEvt(socketMessageEvt))
+                      break
+                    case "pong":
+                      this.dispatchEvent(new SocketPongEvt())
+                      break
+                    case "ping":
+                      this.pong()
+                      break
+                    default:
+                      return
+                }
+            })
 
             let close = false
             const onend = () => {
@@ -142,7 +299,7 @@ module.exports.WebSocket = klass(Node, statics => {
             const pingpong = () => {
                 if ( close )
                   return
-                
+
                 const op =  this.ping()
                 op.catch(e => this.close())
                 op.then(() => setTimeout(pingpong, 25000))
@@ -304,7 +461,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                         upgrades.get(this).sockets.delete(_socket)
                     }, true)
 
-                    this.dispatchEvent(new module.exports.SocketEvt(_socket))
+                    this.dispatchEvent(new SocketEvt(_socket))
                 })
             }
 
