@@ -4,14 +4,13 @@ const crypto = require("crypto")
 const errors = require("./errors")
 const eventWM = require("../lib/Event")._eventWM
 const klass = require("../lib/class").class
-const Socket = require("net").Socket
-
+const typeOf = require("../lib/type").typeOf
 //const path = require("path")
-//const typeOf = require("../lib/type").typeOf
 
 const Event = require("../lib/Event").Event
 const Node = require("../lib/Node").Node
 const Server = require("./Server").Server
+const Socket = require("net").Socket
 const UID = require("../lib/UID").UID
 
 const SocketEvt = klass(Event, statics => {
@@ -276,7 +275,7 @@ module.exports.WebSocket = klass(Node, statics => {
                       this.dispatchEvent(new SocketBinaryMessageEvt(socketMessageEvt))
                       break
                     case "pong":
-                      this.dispatchEvent(new SocketPongEvt())
+                      this.dispatchEvent(new SocketPongEvt)
                       break
                     case "ping":
                       this.pong()
@@ -316,8 +315,34 @@ module.exports.WebSocket = klass(Node, statics => {
                 return this.frame_text.apply(this, arguments)
             }
         }
-      , frame_binary: { enumerable: true,
-            value: function(){  // TODO
+      , frame_binary: { enumerable: true, //TODO TEST
+            value: function(msg, {fin, mask:masked}={ fin:true }){
+                return new Promise((resolve, reject) => {
+                    const payload = Buffer.from(msg)
+                    const header = Buffer.alloc(2)
+                    const {len, length} = function(){
+                        const len = payload.length < 0x7e ? payload.length
+                                  : payload.length <= 0xffff ? 0x7e
+                                  : 0x7f
+                        const length = len < 0x7e ? Buffer.alloc(0)
+                                     : len == 0x7e ? function(buffer){ buffer.writeUInt16BE(payload.length); return buffer }(Buffer.alloc(2))
+                                     :  function(buffer){ //TODO TEST!, find a pretttier way?
+                                            const bin = payload.length.toString(2).split("")
+                                            buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 4)
+                                            buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 0)
+                                            return buffer
+                                        }(Buffer.alloc(8))
+
+                        return { len, length }
+                    }()
+                    const mask = !!masked ? Buffer.from( new Uint32Array(4).fill(0) ) : Buffer.alloc(0) //TODO add mask
+                    header[0] = 0x0 |(fin?0x80:0) | 0x2
+                    header[1] = 0x0 |(masked?0x80:0) | len
+
+                    const frame = Buffer.concat([header, length, mask, payload])
+
+                    this.socket.write(frame, "binary", resolve)
+                })
             }
         }
       , frame_text: { enumerable: true,
@@ -335,7 +360,12 @@ module.exports.WebSocket = klass(Node, statics => {
                                   : 0x7f
                         const length = len < 0x7e ? Buffer.alloc(0)
                                      : len == 0x7e ? function(buffer){ buffer.writeUInt16BE(payload.length); return buffer }(Buffer.alloc(2))
-                                     : function(buffer){ return buffer }(Buffer.alloc(8)) //TODO INT64
+                                     :  function(buffer){ //TODO TEST!, find a pretttier way?
+                                            const bin = payload.length.toString(2).split("")
+                                            buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 4)
+                                            buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 0)
+                                            return buffer
+                                        }(Buffer.alloc(8))
 
                         return { len, length }
                     }()
