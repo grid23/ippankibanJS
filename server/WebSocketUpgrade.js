@@ -82,6 +82,12 @@ module.exports.WebSocket = klass(Node, statics => {
 
     const sockets = new WeakMap
 
+    Object.defineProperties(statics, {
+        PONG_TIMEOUT: { enumerable: true,
+            value: 5000
+        }
+    })
+
     return {
         constructor: function(socket){
             if ( !(socket instanceof Socket) )
@@ -123,7 +129,9 @@ module.exports.WebSocket = klass(Node, statics => {
             }
             sockets.get(this).socket.on("data", ondata)
 
+            let close = false
             const onend = () => {
+                close = true
                 this.dispatchEvent("close")
             }
 
@@ -131,7 +139,14 @@ module.exports.WebSocket = klass(Node, statics => {
             sockets.get(this).socket.on("close", onend)
             sockets.get(this).socket.on("timeout", onend)
 
-            const pingpong = () => this.ping().then(() => setTimeout(pingpong, 25000))
+            const pingpong = () => {
+                if ( close )
+                  return
+                
+                const op =  this.ping()
+                op.catch(e => this.close())
+                op.then(() => setTimeout(pingpong, 25000))
+            }
             setTimeout(pingpong, 1000)
         }
       , close: { enumerable: true,
@@ -202,37 +217,45 @@ module.exports.WebSocket = klass(Node, statics => {
         }
       , ping: { enumerable: true,
             value: function(){
-                //TODO, add a reject cause ( ie, no pong )
-                //TODO, no need to recreate the msg everytime
+                //TODO, no need to recreate the msg everytime ?
                 return new Promise((resolve, reject) => {
-                    const message = new Buffer(2)
-                    message[0] = 128 | 9 // "10001001"
-                    message[1] = 0   // "00000000"
+                    const buffer = new Buffer(2)
+                    buffer.writeUInt16BE(0x8900, 0)
+
+                    const timeout = setTimeout(() => {
+                        this.removeEventListener("pong", onpong, true)
+                        //TODO ?
+                        reject()
+                    }, module.exports.WebSocket.PONG_TIMEOUT)
 
                     const onpong = e => {
+                        clearTimeout(timeout)
                         this.removeEventListener("pong", onpong, true)
                         resolve()
                     }
-
                     this.addEventListener("pong", onpong, true)
+
                     this.dispatchEvent("ping")
-                    sockets.get(this).socket.write(message)
+                    this.socket.write( buffer, "binary" )
                 })
             }
         }
       , pong: { enumerable: false,
             value: function(){
-                //TODO shouldn't be called from the outside, move
-                //TODO, no need to recreate the msg everytime
+                //TODO, no need to recreate the msg everytime ?
+                return new Promise(resolve => {
+                    const buffer = new Buffer(2)
+                    buffer.writeUInt16BE(0x8a00, 0) // "1000101000000000"
 
-                const message = new Buffer(2)
-                message[0] = 128 | 10  // "10001010"
-                message[1] = 0   // "00000000"
-                sockets.get(this).socket.write(message)
+                    this.socket.write(buffer, "binary", () => resolve)
+                })
             }
         }
       , uid: { enumerable: true,
             get: function(){ return sockets.get(this).uid }
+        }
+      , socket: { enumerable: true,
+            get: function(){ return sockets.get(this).socket }
         }
     }
 })
@@ -277,7 +300,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
 
                     const _socket = new module.exports.WebSocket(socket)
                     upgrades.get(this).sockets.add(_socket)
-                    _socket.addEventListener("end", e => {
+                    _socket.addEventListener("close", e => {
                         upgrades.get(this).sockets.delete(_socket)
                     }, true)
 
