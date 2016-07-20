@@ -321,54 +321,31 @@ module.exports.WebSocket = klass(Node, statics => {
             }
         }
       , frame_text: { enumerable: true,
-            value: function(msg){
+            value: function(msg, {fin, mask:masked, stringify}={ fin:true }){
                 return new Promise((resolve, reject) => {
-                    let message
-                    let start
-                    const payload = new Buffer(msg)
-                    const length = payload.length
-                    const opcode = 1
+                    try {
+                        msg = !!stringify?JSON.stringify(msg):msg
+                    } catch(e){ return reject(e) }
 
-                    if ( length <= 125 ) {
-                        message = new Buffer(2)
-                        start = 2
-                        message[0] = 128 + opcode
-                        message[1] = length
-                    }
-                    else if ( (length > 125) && (length <= 32767) ) {
-                        message = new Buffer(4)
-                        start = 4
-                        message[0] = 128 + opcode
-                        message[1] = 126
+                    const payload = Buffer.from(msg)
+                    const header = Buffer.alloc(2)
+                    const {len, length} = function(){
+                        const len = payload.length < 0x7e ? payload.length
+                                  : payload.length <= 0xffff ? 0x7e
+                                  : 0x7f
+                        const length = len < 0x7e ? Buffer.alloc(0)
+                                     : len == 0x7e ? function(buffer){ buffer.writeUInt16BE(payload.length); return buffer }(Buffer.alloc(2))
+                                     : function(buffer){ return buffer }(Buffer.alloc(8)) //TODO INT64
 
-                        const bin = Array.prototype.slice.call(length.toString(2))
-                        let idx = message.length-1
-                        const from = message.length-2
+                        return { len, length }
+                    }()
+                    const mask = !!masked ? Buffer.from( new Uint32Array(4).fill(0) ) : Buffer.alloc(0) //TODO add mask
+                    header[0] = 0x0 |(fin?0x80:0) | 0x1
+                    header[1] = 0x0 |(masked?0x80:0) | len
 
-                        for (; idx >= from; idx --) {
-                            const byte = bin.splice(Math.min(-8, bin.length), Math.min(8, bin.length)).join("") || "0"
-                            message[idx] = parseInt(byte, 2)
-                        }
-                    } else {
-                        message = new Buffer(10)
-                        start = 10
-                        message[0] = 128 + opcode
-                        message[1] = 127
+                    const frame = Buffer.concat([header, length, mask, payload])
 
-                        const bin = Array.prototype.slice.call(length.toString(2))
-                        let idx = message.length-1
-                        const from = message.length-8
-
-                        for (; idx >= from; idx-- ) {
-                            const byte = bin.splice(Math.min(-8, bin.length), Math.min(8, bin.length)).join("") || "0"
-                            message[idx] = parseInt(byte, 2)
-                        }
-                    }
-
-                    const _message = Buffer.concat([message, payload], length+start)
-                    sockets.get(this).socket.write(_message, err => {
-                        resolve()
-                    })
+                    this.socket.write(frame, "binary", resolve)
                 })
             }
         }
