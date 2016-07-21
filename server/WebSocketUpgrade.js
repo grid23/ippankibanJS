@@ -291,9 +291,9 @@ module.exports.WebSocket = klass(Node, statics => {
                 this.dispatchEvent("close")
             }
 
-            sockets.get(this).socket.on("end", onend)
-            sockets.get(this).socket.on("close", onend)
-            sockets.get(this).socket.on("timeout", onend)
+            this.socket.on("end", onend)
+            this.socket.on("close", onend)
+            this.socket.on("timeout", onend)
 
             const pingpong = () => {
                 if ( close )
@@ -501,7 +501,6 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                                                             : ``//TODO
                       , ``, ``
                     ].join('\r\n')
-
 
                     if ( headers["connection"].indexOf("keep-alive") != -1 )
                         socket.setKeepAlive(true, 0)
