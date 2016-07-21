@@ -4,13 +4,14 @@ const errors = require("./errors")
 const fs = require("fs")
 const http = require("http")
 const https = require("https")
+const inherits = require("util").inherits
 const klass = require("../lib/class").class
 const net = require("net")
 const objectify = require("../lib/Serializer").Serializer.objectify
 const parse = require("url").parse
 const path = require("path")
 const typeOf = require("../lib/type").typeOf
-const inherits = require("util").inherits
+
 
 const Event = require("../lib/Event").Event
 const Route = require("../lib/Route").Route
@@ -81,7 +82,6 @@ module.exports.Server = klass(Router, /* via util.inherits: http.Server, net.Ser
             http.Server.call(this)
 
             this.on("request", (request, response) => {
-
                 this.dispatchRoute(new this.Route(request, response))
                   .addEventListener("routing", e => {
                       if ( !e.count )

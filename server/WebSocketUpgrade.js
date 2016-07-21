@@ -316,41 +316,86 @@ module.exports.WebSocket = klass(Node, statics => {
             }
         }
       , frame_binary: { enumerable: true, //TODO TEST
-            value: function(msg, {fin, mask:masked}={ fin:true }){
+            //value: function(msg, {fin, mask:masked}={ fin:true }){
+            value: function(...args){
+                const cb = typeOf(args[args.length-1]) == "function" ? args.pop() : Function.prototype
+                const dict = typeOf(args[args.length-1]) == "object" ? args.pop() : {}
+                const msg = !!args[0] || Object.prototype.toString(args[0])
+
+                const fin = typeOf(dict.fin) == "boolean" ? dict.fin : true
+                const masked = !!dict.mask || !!dict.masked
+                const file = !!dict.file
+
                 return new Promise((resolve, reject) => {
-                    const payload = Buffer.from(msg)
-                    const header = Buffer.alloc(2)
-                    const {len, length} = function(){
-                        const len = payload.length < 0x7e ? payload.length
-                                  : payload.length <= 0xffff ? 0x7e
-                                  : 0x7f
-                        const length = len < 0x7e ? Buffer.alloc(0)
-                                     : len == 0x7e ? function(buffer){ buffer.writeUInt16BE(payload.length); return buffer }(Buffer.alloc(2))
-                                     :  function(buffer){ //TODO TEST!, find a pretttier way?
-                                            const bin = payload.length.toString(2).split("")
-                                            buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 4)
-                                            buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 0)
-                                            return buffer
-                                        }(Buffer.alloc(8))
+                    const onerror = e => { cb(e); reject(e) }
 
-                        return { len, length }
-                    }()
-                    const mask = !!masked ? Buffer.from( new Uint32Array(4).fill(0) ) : Buffer.alloc(0) //TODO add mask
-                    header[0] = 0x0 |(fin?0x80:0) | 0x2
-                    header[1] = 0x0 |(masked?0x80:0) | len
+                    if ( file && typeOf(args[0]) == "string" ) {
+                        fs.readFile(args.shift(), (err, data) => {
+                            if ( err )
+                              return onerror(err)
+                            resolve(data)
+                        })
+                    } else if ( args[0] instanceof Buffer )
+                      resolve(args.shift())
+                    else {
+                        try {
+                            const buffer = Buffer.from(args.shift())
+                        } catch(e) {
+                            onerror(e)
+                            reject(e)
+                        }
+                    }
+                }).then(msg=>{
+                    return new Promise((resolve, reject) => {
+                        const onerror = e => { cb(e); reject(e) }
 
-                    const frame = Buffer.concat([header, length, mask, payload])
+                        const payload = Buffer.from(msg)
+                        const header = Buffer.alloc(2)
+                        const {len, length} = function(){
+                            const len = payload.length < 0x7e ? payload.length
+                                      : payload.length <= 0xffff ? 0x7e
+                                      : 0x7f
+                            const length = len < 0x7e ? Buffer.alloc(0)
+                                         : len == 0x7e ? function(buffer){ buffer.writeUInt16BE(payload.length); return buffer }(Buffer.alloc(2))
+                                         :  function(buffer){ //TODO TEST!, find a pretttier way?
+                                                const bin = payload.length.toString(2).split("")
+                                                buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 4)
+                                                buffer.writeUInt32BE(parseInt(bin.splice(-32).join("")||"0", 2), 0)
+                                                return buffer
+                                            }(Buffer.alloc(8))
 
-                    this.socket.write(frame, "binary", resolve)
+                            return { len, length }
+                        }()
+                        const mask = !!masked ? Buffer.from( new Uint32Array(4).fill(0) ) : Buffer.alloc(0) //TODO add mask
+                        header[0] = 0x0 |(fin?0x80:0) | 0x2
+                        header[1] = 0x0 |(masked?0x80:0) | len
+
+                        const frame = Buffer.concat([header, length, mask, payload])
+
+                        this.socket.write(frame, "binary", resolve)
+                    })
                 })
             }
         }
       , frame_text: { enumerable: true,
-            value: function(msg, {fin, mask:masked, stringify}={ fin:true }){
+            //value: function(msg, {fin, mask:masked, stringify}={ fin:true }){
+            value: function(...args){
+                const cb = typeOf(args[args.length-1]) == "function" ? args.pop() : Function.prototype
+                const dict = typeOf(args[args.length-1]) == "object" ? args.pop() : {}
+
+                const fin = typeOf(dict.fin) == "boolean" ? dict.fin : true
+                const masked = !!dict.mask || !!dict.masked
+                const stringify = !!dict.stringify
+
                 return new Promise((resolve, reject) => {
+                    const onerror = e => { cb(e); reject(e) }
+
+                    let msg
                     try {
-                        msg = !!stringify?JSON.stringify(msg):msg
-                    } catch(e){ return reject(e) }
+                         msg = typeOf(args[0]) == "string" ? args.shift()
+                             : !!stringify ? JSON.stringify(args.shift())
+                             : void function(){ throw new TypeError(errors.TODO) }()
+                    } catch(e){ return onerror(e)  }
 
                     const payload = Buffer.from(msg)
                     const header = Buffer.alloc(2)
