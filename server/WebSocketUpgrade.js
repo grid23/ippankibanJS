@@ -223,6 +223,15 @@ module.exports.WebSocket = klass(Node, statics => {
         }
     })
 
+    const pong =  socket => {
+        return new Promise(resolve => {
+            const buffer = new Buffer(2)
+            buffer.writeUInt16BE(0x8a00, 0) // "1000101000000000"
+
+            socket.write(buffer, "binary", () => resolve)
+        })
+    }
+
     return {
         constructor: function(socket){
             if ( !(socket instanceof Socket) )
@@ -264,8 +273,9 @@ module.exports.WebSocket = klass(Node, statics => {
                 const socketMessageEvt = new SocketMessageEvt({ buffer, fin, rsv1, rsv2, rsv3, opcode, masked, length, start, mask })
 
                 this.dispatchEvent(socketMessageEvt)
-                if ( socketMessageEvt.cancelled )
-                  return
+                if ( socketMessageEvt.cancelled ) {
+                    return
+                }
 
                 switch ( socketMessageEvt.op ) {
                     case "text":
@@ -278,7 +288,7 @@ module.exports.WebSocket = klass(Node, statics => {
                       this.dispatchEvent(new SocketPongEvt)
                       break
                     case "ping":
-                      this.pong()
+                      pong(this.socket)
                       break
                     default:
                       return
@@ -299,9 +309,12 @@ module.exports.WebSocket = klass(Node, statics => {
                 if ( close )
                   return
 
+
                 const op =  this.ping()
                 op.catch(e => this.close())
-                op.then(() => setTimeout(pingpong, 25000))
+                op.then(() => {
+                    setTimeout(pingpong, 25000)
+                })
             }
             setTimeout(pingpong, 1000)
         }
@@ -449,17 +462,6 @@ module.exports.WebSocket = klass(Node, statics => {
                 })
             }
         }
-      , pong: { enumerable: false,
-            value: function(){
-                //TODO, no need to recreate the msg everytime ?
-                return new Promise(resolve => {
-                    const buffer = new Buffer(2)
-                    buffer.writeUInt16BE(0x8a00, 0) // "1000101000000000"
-
-                    this.socket.write(buffer, "binary", () => resolve)
-                })
-            }
-        }
       , uid: { enumerable: true,
             get: function(){ return sockets.get(this).uid }
         }
@@ -474,10 +476,13 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
     const magic_uuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
     return {
-        constructor: function(server){
+        constructor: function(server, protocols){
             Node.call(this)
             upgrades.set(this, Object.create(null))
             upgrades.get(this).sockets = new Set
+            upgrades.get(this).protocols = typeOf(protocols) == "array" ? protocols.filter(p=>typeOf(p)=="string")
+                                         : typeOf(protocols) == "string" ? [protocols]
+                                         : "*"
 
             if ( !Server.isImplementedBy(server) )
               throw new TypeError(errors.TODO)
@@ -488,23 +493,43 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                   server.removeListener("listening", onlisten)
 
                 upgrades.get(this).server.on("upgrade", ({headers}, socket, head) => {
+                    console.log(headers)
                     const shasum = crypto.createHash("sha1")
                     shasum.update(headers["sec-websocket-key"] + magic_uuid, 'binary')
                     const hash = shasum.digest("base64")
+                    const protocol = !!headers["sec-websocket-protocol"]
+                                    ? headers["sec-websocket-protocol"].split(",")
+                                        .filter(p => {
+                                            return upgrades.get(this).protocols === "*"
+                                                 ? true
+                                                 : upgrades.get(this).protocols.indexOf(thisp.trim()) !== -1
+                                        })[0]
+                                    : null
 
-                    const response = [
-                        `HTTP/1.1 101 Switching Protocols`
-                      , `Upgrade: websocket`
-                      , `Connection: ${headers["connection"]}`
-                      , `Sec-WebSocket-Accept: ${hash}`
-                      , !!headers["sec-websocket-protocol"] ? `Sec-WebSocket-Protocol: ${headers["sec-websocket-protocol"].split(",")[0]}`
-                                                            : ``//TODO
-                      , ``, ``
-                    ].join('\r\n')
+                    const response = []
+
+                    // TODO define how to validate the upgrade or not
+                    const connect = headers["sec-websocket-protocol"] && !protocol ? false
+                                  : true
+
+                    if ( connect ) {
+                        response.push(`HTTP/1.1 101 Switching Protocols`)
+                        response.push(`Upgrade: websocket`)
+                        response.push(`Connection: ${headers["connection"]}`)
+                        response.push(`Sec-WebSocket-Accept: ${hash}`)
+                        if ( protocol )
+                          response.push(`Sec-WebSocket-Protocol: ${protocol}`)
+                    } else {
+                        response.push(`403 Forbidden`)
+                    }
+
+                    // add two empty lines as per rfc
+                    response.push(``)
+                    response.push(``)
 
                     if ( headers["connection"].indexOf("keep-alive") != -1 )
                         socket.setKeepAlive(true, 0)
-                    socket.write(response)
+                    socket.write(response.join('\r\n'))
 
                     const _socket = new module.exports.WebSocket(socket)
                     upgrades.get(this).sockets.add(_socket)
