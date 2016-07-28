@@ -46,7 +46,7 @@ const SignalResponse = klass(statics => {
                 }
 
                 if ( responses.get(this).from )
-                  msg["peer"] = responses.get(this).from
+                  msg["peer"] = responses.get(this).from.uid
 
                 return responses.get(this).to.frame_text(msg, { stringify: true })
             }
@@ -138,7 +138,7 @@ const AnswerEvent = klass(SignalEvent, statics => {
 
     return {
         constructor: function(from, to, payload, response){
-            SignalEvent.call(this, "answer", from, to, request, response)
+            SignalEvent.call(this, "answer", from, to, payload, response)
         }
     }
 })
@@ -148,7 +148,7 @@ const ErrorEvent = klass(SignalEvent, statics => {
 
     return {
         constructor: function(from, to, payload, response){
-            SignalEvent.call(this, "error", from, to, request, response)
+            SignalEvent.call(this, "error", from, to, payload, response)
         }
     }
 })
@@ -158,7 +158,7 @@ const ICECandidateEvent = klass(SignalEvent, statics => {
 
     return {
         constructor: function(from, to, payload, response){
-            SignalEvent.call(this, "icecandidate", from, to, request, response)
+            SignalEvent.call(this, "icecandidate", from, to, payload, response)
         }
     }
 })
@@ -168,7 +168,7 @@ const OfferEvent = klass(SignalEvent, statics => {
 
     return {
         constructor: function(from, to, payload, response){
-            SignalEvent.call(this, "offer", from, to, request, response)
+            SignalEvent.call(this, "offer", from, to, payload, response)
         }
     }
 })
@@ -215,11 +215,11 @@ module.exports.SignalingUpgrade = klass(Router, WebSocketUpgrade, statics => {
                               if ( !count )
                                 this.dispatchRoute( new CatchAllSocketCommand(this, socket, cmd, peer, data))
                           })
-                    } catch(e){
+                    } catch(err){
                         const cmd = "error"
-                        const data = e.message
-
-                        this.dispatchRoute( new SocketCommand(this, socket, cmd, data ) )
+                        const data = { error: err.message, originalMessage: e.unmask() }
+                        const peer = null
+                        this.dispatchRoute( new SocketCommand(this, socket, cmd, peer, data ) )
                     }
                 })
             })
@@ -235,7 +235,7 @@ module.exports.SignalingUpgrade = klass(Router, WebSocketUpgrade, statics => {
                 console.warn(e.message)
                 //prevent error from throwing
             }, true)
-            this.addRouteHandler("error", ({socket, cmd, request, response}, next) => {
+            this.addRouteHandler("error", ({socket, peer, cmd, request, response}, next) => {
                 const event = new ErrorEvent(socket, peer, request, response)
                 this.dispatchEvent(event)
                 if ( !event.cancelled )

@@ -9,6 +9,7 @@ const typeOf = require("../lib/type").typeOf
 
 const Event = require("../lib/Event").Event
 const Node = require("../lib/Node").Node
+const SecureServer = require("./SecureServer").SecureServer
 const Server = require("./Server").Server
 const Socket = require("net").Socket
 const UID = require("../lib/UID").UID
@@ -96,7 +97,7 @@ const SocketMessageEvt = klass(Event, statics => {
 
                 const view = events.get(this).buffer.slice(events.get(this).start)
                 for ( let [i, v] of view.entries() )
-                  view[i] = v ^ events.get(this).mask[i%4]
+                  view[i] = v ^ this.mask[i%4]
 
                 return view.toString("utf8")
             }
@@ -484,7 +485,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                                          : typeOf(protocols) == "string" ? [protocols]
                                          : "*"
 
-            if ( !Server.isImplementedBy(server) )
+            if ( !Server.isImplementedBy(server) || !SecureServer.isImplementedBy(server) )
               throw new TypeError(errors.TODO)
             upgrades.get(this).server = server
 
@@ -492,8 +493,12 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                 if ( !!e )
                   server.removeListener("listening", onlisten)
 
+                upgrades.get(this).server.on("secureConnection", socket => {
+                    socket.on("data", data => { console.log("ta mere", data.toString()) })
+                })
+
                 upgrades.get(this).server.on("upgrade", ({headers}, socket, head) => {
-                    console.log(headers)
+                    console.log("UPG", headers)
                     const shasum = crypto.createHash("sha1")
                     shasum.update(headers["sec-websocket-key"] + magic_uuid, 'binary')
                     const hash = shasum.digest("base64")
@@ -505,13 +510,11 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                                                  : upgrades.get(this).protocols.indexOf(thisp.trim()) !== -1
                                         })[0]
                                     : null
-
                     const response = []
 
                     // TODO define how to validate the upgrade or not
                     const connect = headers["sec-websocket-protocol"] && !protocol ? false
                                   : true
-
                     if ( connect ) {
                         response.push(`HTTP/1.1 101 Switching Protocols`)
                         response.push(`Upgrade: websocket`)

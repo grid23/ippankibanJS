@@ -73,7 +73,7 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
       , basedir: { enumerable: true,
             get: function(){ return path.join(this.root, this.browserify.basedir) }
           , set: function(v){
-                if ( type(v) === "string" )
+                if ( typeOf(v) === "string" )
                   this.browserify.basedir = v
             }
 
@@ -204,7 +204,7 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                     })
                 })
                 .catch(e => {
-                    console.log("xxxxxxx")
+                    console.error(e)
                     this.dispatchEvent("error", e)
                 })
             }
@@ -216,7 +216,7 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
       , expose: { enumerable: true,
             get: function(){ return builders.get(this).expose }
           , set: function(v){
-                if ( type(v) === "string" )
+                if ( typeOf(v) === "string" )
                   builders.get(this).expose = v
             }
         }
@@ -234,7 +234,7 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
       , externalRequireName: { enumerable: true,
             get: function(){ return this.browserify.externalRequireName }
           , set: function(){
-                if ( type(v) === "string" )
+                if ( typeOf(v) === "string" )
                   this.browserify.externalRequireName = v
             }
         }
