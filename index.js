@@ -4,6 +4,7 @@ module.exports = {
     class: require("./lib/class").class
   , errors: require("./lib/errors")
   , domready: require("./lib/domready")
+  , cancelAnimationFrame: require("./lib/cancelAnimationFrame").cancelAnimationFrame
   , Collection: require("./lib/Collection").Collection
   , Cookie: require("./lib/Cookie").Cookie
   , CSSConditionalRule: require("./lib/CSSConditionalRule").CSSConditionalRule
@@ -16,6 +17,7 @@ module.exports = {
   , native: require("./lib/native").native
   , Model: require("./lib/Model").Model
   , Node: require("./lib/Node").Node
+  , requestAnimationFrame: require("./lib/requestAnimationFrame").requestAnimationFrame
   , Route: require("./lib/Route").Route
   , RouteDispatcher: require("./lib/RouteDispatcher").RouteDispatcher
   , Router: require("./lib/Router").Router

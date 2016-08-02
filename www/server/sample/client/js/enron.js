@@ -4,6 +4,7 @@ const ippan = require("../../../../../index")
 
 const domready = ippan.domready
 const klass = ippan.class
+const requestAnimationFrame = ippan.requestAnimationFrame
 const singleton = ippan.singleton
 const stylesheet = new ippan.Stylesheet
 
@@ -13,6 +14,7 @@ const EventTarget = ippan.EventTarget
 const Model = ippan.Model
 const Service = ippan.Service
 const View = ippan.View
+
 
 const main = ({nodes:{body}}) => {
     const ecol = new Collection
@@ -103,7 +105,7 @@ const main = ({nodes:{body}}) => {
                 let pos = 0
                 let dir = 1
                 const setbackg = () => {
-                    const iro = '#'+(function lol(m,s,c){return s[m.floor(m.random() * s.length)] + (c && lol(m,s,c-1));})(Math,'0123456789ABCDEF',4)
+                    //const iro = '#'+(function lol(m,s,c){return s[m.floor(m.random() * s.length)] + (c && lol(m,s,c-1));})(Math,'0123456789ABCDEF',4)
                     if ( dir > 0 && pos >= 100 ) {
                       dir = -1
                       return setTimeout(setbackg, 4)
@@ -120,10 +122,10 @@ const main = ({nodes:{body}}) => {
 
                     animCSS.setProperty("transform", `translate3d(${x}px, 0, 0)`)
                     this.query("anim").style.cssText = animCSS.cssText
-                    requestAnimationFrame(setbackg)
+                    requestAnimationFrame(setbackg, true)
                 }
 
-                requestAnimationFrame(setbackg)
+                requestAnimationFrame(setbackg, true)
             }
           , template: "div@wrap.anim-wrap > span@anim.anim"
         }
@@ -153,8 +155,23 @@ const main = ({nodes:{body}}) => {
                     senders = senders.slice() //copy
 
                     return new Promise((resolve, reject) => {
-                        const fragment = document.createDocumentFragment()
+                        const generator = function*(){
+                            while ( senders.length ) {
+                                let split = senders.splice(0, Math.min(5, senders.length))
 
+                                split.forEach(sender => {
+                                    this.query("select").appendChild(new Option(sender).fragment)
+                                })
+
+                                yield
+                            }
+
+                            resolve()
+                            return
+                        }.bind(this)
+
+                        requestAnimationFrame(generator)
+                        /*
                         const exec = () => {
                             let split = senders.splice(0, Math.min(10, senders.length))
 
@@ -171,6 +188,7 @@ const main = ({nodes:{body}}) => {
                             }, 4)
                         }
                         exec()
+                        */
                     })
                 }
 
