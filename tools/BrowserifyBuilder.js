@@ -101,6 +101,16 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
         }
       , build: { enumerable: true,
             value: function(file, directory){
+                const onexception = e => {
+                    process.removeListener("uncaughtException", onexception)
+
+                    if ( e._babel )
+                      console.log(`${e.filename}, ${e.pos}\n${e.codeFrame}`)
+                    else
+                      console.error(e)
+                }
+                process.addListener("uncaughtException", onexception)
+
                 this.browserify.basedir = this.browserify.basedir || this.root
                 this["css-modulesify"].rootDir = this["css-modulesify"].rootDir || this.root
                 this["css-modulesify"].output = this["css-modulesify"].output || this.to_css
@@ -194,6 +204,7 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                           })
                       ])
                       .then(() => {
+                          process.removeListener("uncaughtException", onexception)
                           this.dispatchEvent("built")
                           resolve()
                       })
@@ -204,7 +215,6 @@ module.exports.BrowserifyBuilder = klass(IBuilder, statics => {
                     })
                 })
                 .catch(e => {
-                    console.error(e)
                     this.dispatchEvent("error", e)
                 })
             }
