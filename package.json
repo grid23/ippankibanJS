@@ -8,23 +8,24 @@
 
   , "dependencies": {
       "jsdom": "*"
-    }
-  , "devDependencies": {
-        "browserify": "*"
+      
+      , "browserify": "*"
       , "babel-preset-es2015-rollup": "*"
       , "babelify": "*"
       , "babel-preset-es2015": "*"
-      , "chai": "*"
       , "css-modulesify": "*"
       , "cssnano": "*"
       , "envify": "*"
       , "partialify": "*"
-      , "mocha": "*"
       , "postcss": "*"
       , "postcss-cssnext": "*"
+      , "uglify-js": "https://github.com/mishoo/UglifyJS2.git#harmony"
+    }
+  , "devDependencies": {
+        "chai": "*"
+      , "mocha": "*"
       , "rollup": "*"
       , "rollup-plugin-babel": "*"
-      , "uglify-js": "https://github.com/mishoo/UglifyJS2.git#harmony"
       , "@carrd/rollup-css-modules": "*"
     }
 }
