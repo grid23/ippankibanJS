@@ -485,7 +485,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                                          : typeOf(protocols) == "string" ? [protocols]
                                          : "*"
 
-            if ( !Server.isImplementedBy(server) || !SecureServer.isImplementedBy(server) )
+            if ( !Server.isImplementedBy(server) && !SecureServer.isImplementedBy(server) )
               throw new TypeError(errors.TODO)
             upgrades.get(this).server = server
 
