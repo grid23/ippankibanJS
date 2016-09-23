@@ -84,5 +84,14 @@ describe("View", () => {
         })
     })
 
+    it(" chaining view and readyness ", done => {
+        let v = new View("div > span@span{$foo}", {foo: "bar"})
+        v.appendAt( "span", new View("span{$bar}", { bar: "foo"}) )
+
+        v.addEventListener("ready", e => {
+            chai.expect(v.node.span.textContent).to.equal("barfoo")
+            done()
+        })
+    })
 
 })

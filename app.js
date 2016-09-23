@@ -10,7 +10,7 @@ const PATH_ROOT = path.resolve(process.cwd(), __dirname)
 
 Promise.all([
     new Promise((resolve, reject) => {
-        const mandatory = ["--es_staging", "--harmony-proxies", "--strong_this"]
+        const mandatory = ["--es_staging"]
         const ok = mandatory
                     .map(v => process.execArgv.indexOf(v) > -1)
                     .reduce((v, cv) => !cv ? cv : v)

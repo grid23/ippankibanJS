@@ -15,7 +15,6 @@ const Model = ippan.Model
 const Service = ippan.Service
 const View = ippan.View
 
-
 const main = ({nodes:{body}}) => {
     const ecol = new Collection
     const i18n = new Model

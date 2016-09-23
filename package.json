@@ -8,7 +8,7 @@
 
   , "dependencies": {
       "jsdom": "*"
-      
+
       , "browserify": "*"
       , "babel-preset-es2015-rollup": "*"
       , "babelify": "*"

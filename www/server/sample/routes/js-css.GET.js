@@ -1,5 +1,6 @@
 "use strict"
 
+const babelify = require("babelify")
 const browserify = require("browserify")
 const fs = require("fs")
 const klass = require("../../../../lib/class").class
@@ -29,6 +30,11 @@ module.exports.handleRoute = (route, next) => {
         const bundle = browserify(filepath, {
             debug: true
         })
+
+        // bundle.transform(babelify, {
+        //     presets: ["es2015"]
+        //   //, plugins: ["babel-plugin-proxy"]
+        // })
 
         bundle.on("bundle", stream => {
             stream.pipe(route.response)
