@@ -494,7 +494,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                   server.removeListener("listening", onlisten)
 
                 upgrades.get(this).server.on("secureConnection", socket => {
-                    socket.on("data", data => { console.log("ta mere", data.toString()) })
+                    socket.on("data", data => { console.log("secureconnection?", data.toString()) })
                 })
 
                 upgrades.get(this).server.on("upgrade", ({headers}, socket, head) => {
