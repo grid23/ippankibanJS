@@ -14,7 +14,7 @@ const Server = require("./Server").Server
 const Socket = require("net").Socket
 const UID = require("../lib/UID").UID
 
-const SocketEvt = klass(Event, statics => {
+module.exports.SocketEvt = klass(Event, statics => {
     const events = eventWM
 
     Object.defineProperties(statics, {
@@ -28,7 +28,7 @@ const SocketEvt = klass(Event, statics => {
             if ( !module.exports.WebSocket.isImplementedBy(socket) )
               throw new TypeError(errors.TODO)
 
-            Event.call(this, SocketEvt.NAME)
+            Event.call(this, module.exports.SocketEvt.NAME)
             events.get(this).socket = socket
         }
       , socket: {  enumerable: true,
@@ -110,7 +110,7 @@ const SocketTextMessageEvt = klass(SocketMessageEvt, statics => {
 
     Object.defineProperties(statics, {
         NAME: { enumerable: true,
-            value: "text"
+            value: "textframe"
         }
     })
 
@@ -138,7 +138,7 @@ const SocketBinaryMessageEvt = klass(SocketMessageEvt, statics => {
 
     Object.defineProperties(statics, {
         NAME: { enumerable: true,
-            value: "binary"
+            value: "binaryframe"
         }
     })
 
@@ -329,6 +329,11 @@ module.exports.WebSocket = klass(Node, statics => {
                 return this.frame_text.apply(this, arguments)
             }
         }
+      , send: { enumerable: true,
+            value: function(){ //TODO
+                return this.frame_text.apply(this, arguments)
+            }
+        }
       , frame_binary: { enumerable: true, //TODO TEST
             //value: function(msg, {fin, mask:masked}={ fin:true }){
             value: function(...args){
@@ -493,12 +498,12 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                 if ( !!e )
                   server.removeListener("listening", onlisten)
 
-                upgrades.get(this).server.on("secureConnection", socket => {
-                    socket.on("data", data => { console.log("secureconnection?", data.toString()) })
-                })
+                // upgrades.get(this).server.on("secureConnection", socket => {
+                //     socket.on("data", data => { console.log("secureconnection?", data.toString()) })
+                // })
 
                 upgrades.get(this).server.on("upgrade", ({headers}, socket, head) => {
-                    console.log("UPG", headers)
+                    //console.log("UPG", headers)
                     const shasum = crypto.createHash("sha1")
                     shasum.update(headers["sec-websocket-key"] + magic_uuid, 'binary')
                     const hash = shasum.digest("base64")
@@ -540,7 +545,7 @@ module.exports.WebSocketUpgrade = klass(Node, statics => {
                         upgrades.get(this).sockets.delete(_socket)
                     }, true)
 
-                    this.dispatchEvent(new SocketEvt(_socket))
+                    this.dispatchEvent(new module.exports.SocketEvt(_socket))
                 })
             }
 
