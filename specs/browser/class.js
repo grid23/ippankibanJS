@@ -2,7 +2,7 @@
 
 describe("class()", () => {
     const klass = require("lib").class
-    
+
     describe("class(obj {})", () => {
         it("should accept an object as a prototype definition", () => {
             let X = klass({
@@ -184,6 +184,24 @@ describe("class()", () => {
             chai.expect(A.isImplementedBy(a)).to.be.true
             chai.expect(A.isImplementedBy(b)).to.be.true
             chai.expect(A.isImplementedBy(c)).to.be.false
+        })
+    })
+
+    describe("instanceof Class", () => {
+        it("should compare an object with a class, and return true if the objetcs inherits or implements the class in a compatible fashion", () => {
+            var A = klass({
+                fna: { enumerable: true, value: function(){} }
+              , fnb: { enumerable: true, configurable: true, value: function(){} }
+            })
+
+            var a = new A
+            var b = { fna: A.prototype.fna, fnb: function(){} }
+            var c = { fna: function(){}, fnb: function(){} }
+
+            chai.expect(a instanceof A).to.be.true
+            chai.expect(b instanceof A).to.be.true
+            chai.expect(c instanceof A).to.be.false
+
         })
     })
 
