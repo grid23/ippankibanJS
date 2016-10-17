@@ -1,2 +1,2 @@
-#一般基盤JS (ippankibanJS)
+#壱般基盤JS (ippankibanJS)
 ##ES2015 general library.
