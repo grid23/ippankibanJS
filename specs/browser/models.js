@@ -221,7 +221,16 @@ describe("Model", () => {
                         done()
                     })
                 })
+            })
 
+            it("misc", done=>{
+                let m = new Model({ a: { b: "bar" } })
+                m.hook("a.b", v=>v.toUpperCase())
+
+                m.read("*").then(data=>{
+                    chai.expect(data["a.b"]).to.equal("BAR")
+                    done()
+                })
             })
         })
     })
