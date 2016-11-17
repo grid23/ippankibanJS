@@ -2,10 +2,7 @@
 
 const babelify = require("babelify")
 const browserify = require("browserify")
-
-const {rollup} = require("rollup")
 const babel = require("rollup-plugin-babel")
-const {default:cssModules} = require("@carrd/rollup-css-modules")
 const fs = require("fs")
 const klass = require("../../../../lib/class").class
 const path = require("path")
@@ -32,23 +29,7 @@ module.exports.handleRoute = (route, next) => {
     } else {
         const entry = path.join(path.resolve(process.cwd(), __dirname), "../client/js", route.matches.file)
 
-        const roll = rollup({ entry,
-            plugins: [
-                babel({})
-              , cssModules({})
-            ]
-        })
-
-        roll
-        .catch(e => console.error(e))
-        .then((...args) => {
-            console.log(args)
-        })
-
-        console.log(roll)
-
-        /*
-        const bundle = browserify(filepath, {
+        const bundle = browserify(entry, {
             debug: true
         })
 
@@ -57,6 +38,5 @@ module.exports.handleRoute = (route, next) => {
         })
 
         bundle.bundle()
-        */
     }
 }

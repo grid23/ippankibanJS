@@ -4,6 +4,7 @@ const chai = require("chai")
 const Serializer = require("../../lib/Serializer").Serializer
 
 describe("Serializer", () => {
+
     describe("Serializer.serialize", () => {
         it ("can serialize a one-level deep object", () => {
             let o = Serializer.serialize({ foo : "bar", bar: "foo" })
@@ -65,6 +66,18 @@ describe("Serializer", () => {
             let o = s.serialize({ foo : "bar", bar: "foo" })
             let p = s.serialize({ foo : "bar" })
             let q = s.serialize({ })
+
+            chai.expect(o).to.equal("foo=bar&bar=foo")
+            chai.expect(p).to.equal("foo=bar")
+            chai.expect(q).to.equal("")
+        })
+
+        it("serializer.stringify", () => {
+            let s = new Serializer
+
+            let o = s.stringify({ foo : "bar", bar: "foo" })
+            let p = s.stringify({ foo : "bar" })
+            let q = s.stringify({ })
 
             chai.expect(o).to.equal("foo=bar&bar=foo")
             chai.expect(p).to.equal("foo=bar")

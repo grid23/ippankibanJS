@@ -1,6 +1,6 @@
 {
     "name": "ippankiban"
-  , "version": "0.0.0"
+  , "version": "0.1.0"
 
   , "engines": {
         "nodejs": "^6.3.0"
@@ -8,21 +8,12 @@
 
   , "dependencies": {
       "jsdom": "*"
-
-      , "browserify": "*"
-      , "babel-preset-es2015-rollup": "*"
-      , "babelify": "*"
-      , "babel-preset-es2015": "*"
-      , "css-modulesify": "*"
-      , "cssnano": "*"
-      , "envify": "*"
-      , "partialify": "*"
-      , "postcss": "*"
-      , "postcss-cssnext": "*"
-      , "uglify-js": "https://github.com/mishoo/UglifyJS2.git#harmony"
     }
   , "devDependencies": {
-        "chai": "*"
+        "browserify": "*"
+      , "babelify": "*"
+      , "babel-preset-es2015": "*"
+      , "chai": "*"
       , "mocha": "*"
       , "rollup": "*"
       , "rollup-plugin-babel": "*"

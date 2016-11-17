@@ -70,6 +70,18 @@ describe("Serializer", () => {
             chai.expect(q).to.equal("")
         })
 
+        it("serializer.stringify", () => {
+            let s = new Serializer
+
+            let o = s.stringify({ foo : "bar", bar: "foo" })
+            let p = s.stringify({ foo : "bar" })
+            let q = s.stringify({ })
+
+            chai.expect(o).to.equal("foo=bar&bar=foo")
+            chai.expect(p).to.equal("foo=bar")
+            chai.expect(q).to.equal("")
+        })
+
         it ("can serialize a one-level deep object using speficic syntax", () => {
             let s = new Serializer({ delimiter: ":", separator: ";" })
             let o = s.serialize({ foo : "bar", bar: "foo" })
@@ -79,10 +91,6 @@ describe("Serializer", () => {
             chai.expect(o).to.equal("foo:bar;bar:foo")
             chai.expect(p).to.equal("foo:bar")
             chai.expect(q).to.equal("")
-        })
-
-        it("serializer.stringify", () => {
-            throw new Error("todo")
         })
 
         it ("can objectify a serialized string", () => {

@@ -224,8 +224,9 @@ describe("EventTarget", () => {
             c.dispatchEvent("foo")
         })
 
-        it("cancelled event (sync)", () => {
+        it("led event (sync)", () => {
             let e = new Event("foo")
+            Event.keepAlive(e)
             let a = new Node
 
             a.addEventListener("foo", e => {
@@ -235,6 +236,7 @@ describe("EventTarget", () => {
             a.dispatchEvent(e)
 
             chai.expect(e.cancelled).to.be.true
+            Event.destroy(e)
         })
 
         it("no bubbling", done => {
