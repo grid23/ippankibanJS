@@ -209,7 +209,7 @@ describe("Router", () => {
         })
     })
 
-    it("router.dispatchRoute(path) (G)", done => {
+    it("router.dispatchRoute(path) (G - wait)", done => {
         const router = new Router
         let order = 0
 
@@ -233,6 +233,43 @@ describe("Router", () => {
 
             done()
         })
-
     })
+
+    it("router.dispatchRoute(path) (H - late next error)", done => {
+        const router = new Router
+        const _warn = console.warn.bind(console)
+
+        console.warn = function(msg){
+            console.log("xlklxklxlkxlk")
+            throw new Error(msg)
+        }
+
+        router.addRouteHandler("/H", (r, next) => {
+            next()
+            try {
+                next()
+            } catch(e) {
+                chai.expect(true).to.be.true
+            }
+        })
+
+        router.addRouteHandler("/H", (r, next) => {
+            r.wait(ok => {
+                console.log("x")
+                ok()
+console.log("y")
+                try {
+                    next()
+                } catch(e) {
+                    chai.expect(true).to.be.true
+                    setTimeout(done, 100)
+                }
+                console.warn = _warn
+            })
+        })
+
+        router.dispatchRoute("/H")
+    })
+
+
 })
