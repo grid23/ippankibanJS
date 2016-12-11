@@ -12,11 +12,31 @@
   , "devDependencies": {
         "browserify": "*"
       , "babelify": "*"
-      , "babel-preset-es2015": "*"
+
       , "chai": "*"
       , "mocha": "*"
+
       , "rollup": "*"
       , "rollup-plugin-babel": "*"
       , "@carrd/rollup-css-modules": "*"
+
+      , "webpack": "*"
+      , "webpack-combine-loaders": "*"
+      , "jsdoc-webpack-plugin": "*"
+      , "extract-text-webpack-plugin": "*"
+      , "babel-loader": "*"
+      , "babel-core": "*"
+      , "babili-webpack-plugin": "*"
+      , "babel-preset-es2015": "*"
+      , "css-loader": "*"
+      , "style-loader": "*"
+      , "postcss": "*"
+      , "postcss-loader": "*"
+      , "postcss-import": "*"
+      , "postcss-url": "*"
+      , "postcss-cssnext": "*"
+      , "postcss-import": "*"
+      , "postcss-responsive-type": "*"
+      , "normalize.css": "*"
     }
 }

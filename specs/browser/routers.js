@@ -214,14 +214,14 @@ describe("Router", () => {
         let order = 0
 
         router.addRouteHandler("/foo", (route, next) => {
-            route.wait(done => {
+            route.wait(ok => {
                 setTimeout(() => {
                     chai.expect(order).to.equal(0)
                     order += 1
 
                     next()
-                    done()
-                }, 200)
+                    ok()
+                }, 1000)
             })
         })
         router.addRouteHandler("/foo", (route, next) => {
@@ -229,8 +229,8 @@ describe("Router", () => {
         })
 
         router.dispatchRoute("/foo").addEventListener("routing", e => {
+            console.log("ok")
             chai.expect(e.count).to.equal(2)
-
             done()
         })
     })
@@ -241,7 +241,7 @@ describe("Router", () => {
 
         console.warn = function(msg){
             console.log("xlklxklxlkxlk")
-            throw new Error(msg)
+            done()
         }
 
         router.addRouteHandler("/H", (r, next) => {
@@ -255,9 +255,8 @@ describe("Router", () => {
 
         router.addRouteHandler("/H", (r, next) => {
             r.wait(ok => {
-                console.log("x")
                 ok()
-console.log("y")
+                
                 try {
                     next()
                 } catch(e) {
