@@ -2,6 +2,7 @@
 
 const chai = require("chai")
 const klass = require("../../lib/class").class
+const Event = require("../../lib/Event").Event
 
 describe("class()", () => {
     describe("class(obj {})", () => {
@@ -173,6 +174,23 @@ describe("class()", () => {
 
     describe("[class].isImplementedBy", function(){
         it("should compare an object with a class, and return true if the objetcs inherits or implements the class in a compatible fashion", function(){
+            var A = klass({
+                fna: { enumerable: true, value: function(){} }
+              , fnb: { enumerable: true, configurable: true, value: function(){} }
+            })
+
+            var a = new A
+            var b = { fna: A.prototype.fna, fnb: function(){} }
+            var c = { fna: function(){}, fnb: function(){} }
+
+            chai.expect(A.isImplementedBy(a)).to.be.true
+            chai.expect(A.isImplementedBy(b)).to.be.true
+            chai.expect(A.isImplementedBy(c)).to.be.false
+        })
+    })
+
+    describe("[class].isImplementedBy", function(){
+        it("should compare an object with a class, and return true if the object inherits or implements the class in a compatible fashion", function(){
             var A = klass({
                 fna: { enumerable: true, value: function(){} }
               , fnb: { enumerable: true, configurable: true, value: function(){} }

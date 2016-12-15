@@ -2,6 +2,7 @@
 
 describe("class()", () => {
     const klass = require("lib").class
+    const Event = require("lib").Event
 
     describe("class(obj {})", () => {
         it("should accept an object as a prototype definition", () => {
@@ -171,7 +172,7 @@ describe("class()", () => {
     })
 
     describe("[class].isImplementedBy", function(){
-        it("should compare an object with a class, and return true if the objetcs inherits or implements the class in a compatible fashion", function(){
+        it("should compare an object with a class, and return true if the object inherits or implements the class in a compatible fashion", function(){
             var A = klass({
                 fna: { enumerable: true, value: function(){} }
               , fnb: { enumerable: true, configurable: true, value: function(){} }
@@ -184,6 +185,31 @@ describe("class()", () => {
             chai.expect(A.isImplementedBy(a)).to.be.true
             chai.expect(A.isImplementedBy(b)).to.be.true
             chai.expect(A.isImplementedBy(c)).to.be.false
+        })
+    })
+
+    describe("[class].isImplementedBy", () => {
+        it("should compare an object with a class, and return true if the object inherits or implements the class in a compatible fashion", () =>{
+            var E = klass(Event, {
+                constructor: function(){
+                    Event.call(this, "foo")
+                }
+            })
+            var F = klass(E, {
+                constructor: function(){
+                    Event.call(this, "foo")
+                }
+            })
+
+            var e = new E
+            var f = new F
+
+            chai.expect(Event.isImplementedBy(e)).to.be.true
+            chai.expect(Event.isImplementedBy(f)).to.be.true
+            chai.expect(E.isImplementedBy(f)).to.be.true
+            chai.expect(e instanceof Event).to.be.true
+            chai.expect(f instanceof Event).to.be.true
+            chai.expect(f instanceof E).to.be.true
         })
     })
 
