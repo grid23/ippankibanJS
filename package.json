@@ -19,7 +19,6 @@
       , "rollup": "*"
       , "rollup-plugin-babel": "*"
       , "@carrd/rollup-css-modules": "*"
-
       , "webpack": "*"
       , "webpack-combine-loaders": "*"
       , "jsdoc-webpack-plugin": "*"
@@ -29,6 +28,7 @@
       , "babili-webpack-plugin": "*"
       , "babel-preset-es2015": "*"
       , "babel-preset-latest": "*"
+      , "babel-plugin-transform-es2015-modules-commonjs": "*"
       , "css-loader": "*"
       , "style-loader": "*"
       , "postcss": "*"
