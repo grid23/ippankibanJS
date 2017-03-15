@@ -1,43 +1,39 @@
 {
-    "name": "ippankiban"
-  , "version": "0.1.0"
-
-  , "engines": {
+    "name": "ippankiban",
+    "version": "0.1.0",
+    "engines": {
         "nodejs": "^6.3.0"
-    }
-
-  , "dependencies": {
-      "jsdom": "*"
-    }
-  , "devDependencies": {
-        "browserify": "*"
-      , "babelify": "*"
-
-      , "chai": "*"
-      , "mocha": "*"
-
-      , "rollup": "*"
-      , "rollup-plugin-babel": "*"
-      , "@carrd/rollup-css-modules": "*"
-      , "webpack": "*"
-      , "webpack-combine-loaders": "*"
-      , "jsdoc-webpack-plugin": "*"
-      , "extract-text-webpack-plugin": "*"
-      , "babel-loader": "*"
-      , "babel-core": "*"
-      , "babili-webpack-plugin": "*"
-      , "babel-preset-es2015": "*"
-      , "babel-preset-latest": "*"
-      , "babel-plugin-transform-es2015-modules-commonjs": "*"
-      , "css-loader": "*"
-      , "style-loader": "*"
-      , "postcss": "*"
-      , "postcss-loader": "*"
-      , "postcss-import": "*"
-      , "postcss-url": "*"
-      , "postcss-cssnext": "*"
-      , "postcss-import": "*"
-      , "postcss-responsive-type": "*"
-      , "normalize.css": "*"
+    },
+    "dependencies": {
+        "js-beautify": "^1.6.11",
+        "jsdom": "*"
+    },
+    "devDependencies": {
+        "@carrd/rollup-css-modules": "*",
+        "babel-core": "*",
+        "babel-loader": "*",
+        "babel-plugin-transform-es2015-modules-commonjs": "*",
+        "babel-preset-es2015": "*",
+        "babel-preset-latest": "*",
+        "babelify": "*",
+        "babili-webpack-plugin": "*",
+        "browserify": "*",
+        "chai": "*",
+        "css-loader": "*",
+        "extract-text-webpack-plugin": "*",
+        "jsdoc-webpack-plugin": "*",
+        "mocha": "*",
+        "normalize.css": "*",
+        "postcss": "*",
+        "postcss-cssnext": "*",
+        "postcss-import": "*",
+        "postcss-loader": "*",
+        "postcss-responsive-type": "*",
+        "postcss-url": "*",
+        "rollup": "*",
+        "rollup-plugin-babel": "*",
+        "style-loader": "*",
+        "webpack": "*",
+        "webpack-combine-loaders": "*"
     }
 }
