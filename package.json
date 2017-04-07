@@ -1,8 +1,8 @@
 {
     "name": "ippankiban",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "engines": {
-        "nodejs": "^6.3.0"
+        "nodejs": "^6.9.0"
     },
     "dependencies": {
         "js-beautify": "^1.6.11",
