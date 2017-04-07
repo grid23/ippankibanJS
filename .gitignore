@@ -7,6 +7,11 @@ archive/
 #svn
 .svn/
 
+
+# stuff
+sample/
+server/sample.js
+
 # compiled sources
 *.com
 *.class
