@@ -1,42 +1,42 @@
 {
-    "name": "ippankiban",
-    "version": "0.1.1",
-    "contributors": [
-        "Grid23 <hello@grid23.net>"
-    ],
-    "engines": {
-        "nodejs": "^6.9.0"
-    },
-    "dependencies": {
-        "js-beautify": "^1.6.11",
-        "jsdom": "*"
-    },
-    "devDependencies": {
-        "@carrd/rollup-css-modules": "*",
-        "babel-core": "*",
-        "babel-loader": "*",
-        "babel-plugin-transform-es2015-modules-commonjs": "*",
-        "babel-preset-es2015": "*",
-        "babel-preset-latest": "*",
-        "babelify": "*",
-        "babili-webpack-plugin": "*",
-        "browserify": "*",
-        "chai": "*",
-        "css-loader": "*",
-        "extract-text-webpack-plugin": "*",
-        "jsdoc-webpack-plugin": "*",
-        "mocha": "*",
-        "normalize.css": "*",
-        "postcss": "*",
-        "postcss-cssnext": "*",
-        "postcss-import": "*",
-        "postcss-loader": "*",
-        "postcss-responsive-type": "*",
-        "postcss-url": "*",
-        "rollup": "*",
-        "rollup-plugin-babel": "*",
-        "style-loader": "*",
-        "webpack": "*",
-        "webpack-combine-loaders": "*"
-    }
+  "name": "ippankiban",
+  "version": "0.1.2",
+  "contributors": [
+    "Grid23 <hello@grid23.net>"
+  ],
+  "engines": {
+    "nodejs": "^6.9.0"
+  },
+  "dependencies": {
+    "js-beautify": "^1.6.11",
+    "jsdom": "*"
+  },
+  "devDependencies": {
+    "@carrd/rollup-css-modules": "*",
+    "babel-core": "*",
+    "babel-loader": "*",
+    "babel-plugin-transform-es2015-modules-commonjs": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-latest": "*",
+    "babelify": "*",
+    "babili-webpack-plugin": "*",
+    "browserify": "*",
+    "chai": "*",
+    "css-loader": "*",
+    "extract-text-webpack-plugin": "*",
+    "jsdoc-webpack-plugin": "*",
+    "mocha": "*",
+    "normalize.css": "*",
+    "postcss": "*",
+    "postcss-cssnext": "*",
+    "postcss-import": "*",
+    "postcss-loader": "*",
+    "postcss-responsive-type": "*",
+    "postcss-url": "*",
+    "rollup": "*",
+    "rollup-plugin-babel": "*",
+    "style-loader": "*",
+    "webpack": "*",
+    "webpack-combine-loaders": "*"
+  }
 }
