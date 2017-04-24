@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "js-beautify": "^1.6.11",
-    "jsdom": "*"
+    "jsdom": "^10.0.0"
   },
   "devDependencies": {
     "@carrd/rollup-css-modules": "*",
