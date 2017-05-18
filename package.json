@@ -19,7 +19,7 @@
       , "partialify": "*"
       , "postcss": "*"
       , "postcss-cssnext": "*"
-      , "uglify-js": "https://github.com/mishoo/UglifyJS2.git#harmony"
+      , "uglify-js": "2.*.*"
     }
   , "devDependencies": {
         "chai": "*"
