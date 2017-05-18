@@ -1,31 +1,28 @@
 {
-    "name": "ippankiban"
-  , "version": "0.0.0"
-
-  , "engines": {
-        "nodejs": "^6.3.0"
-    }
-
-  , "dependencies": {
-      "jsdom": "*"
-
-      , "browserify": "*"
-      , "babel-preset-es2015-rollup": "*"
-      , "babelify": "*"
-      , "babel-preset-es2015": "*"
-      , "css-modulesify": "*"
-      , "cssnano": "*"
-      , "envify": "*"
-      , "partialify": "*"
-      , "postcss": "*"
-      , "postcss-cssnext": "*"
-      , "uglify-js": "2.*.*"
-    }
-  , "devDependencies": {
-        "chai": "*"
-      , "mocha": "*"
-      , "rollup": "*"
-      , "rollup-plugin-babel": "*"
-      , "@carrd/rollup-css-modules": "*"
-    }
+  "name": "ippankiban",
+  "version": "0.0.1",
+  "engines": {
+    "nodejs": "^6.3.0"
+  },
+  "dependencies": {
+    "jsdom": "*",
+    "browserify": "*",
+    "babel-preset-es2015-rollup": "*",
+    "babelify": "*",
+    "babel-preset-es2015": "*",
+    "css-modulesify": "*",
+    "cssnano": "*",
+    "envify": "*",
+    "partialify": "*",
+    "postcss": "*",
+    "postcss-cssnext": "*",
+    "uglify-js": "2.*.*"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
+    "rollup": "*",
+    "rollup-plugin-babel": "*",
+    "@carrd/rollup-css-modules": "*"
+  }
 }
