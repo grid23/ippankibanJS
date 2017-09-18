@@ -8,7 +8,7 @@
     "nodejs": "^6.9.0"
   },
   "dependencies": {
-    "js-beautify": "^1.7.0",
+    "js-beautify": "1.6.14",
     "jsdom": "^10.0.0"
   },
   "devDependencies": {
