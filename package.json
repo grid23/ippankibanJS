@@ -1,6 +1,6 @@
 {
   "name": "ippankiban",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "contributors": [
     "Grid23 <hello@grid23.net>"
   ],
@@ -15,7 +15,7 @@
   "devDependencies": {
     "chai": "*",
     "mocha": "*",
-    "normalize.css": "*",
+    "normalize.css": "^5.0.0",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
@@ -31,7 +31,6 @@
     "raw-loader": "^0.5.1",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.8.2",
-    "normalize.css": "^5.0.0",
     "postcss-color-function": "^3.0.0",
     "postcss-cssnext": "^2.11.0",
     "postcss-import": "^9.1.0",
